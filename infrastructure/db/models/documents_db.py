@@ -30,3 +30,12 @@ class Document(models.Model):
     business_partner_id
 
     """
+
+    class Meta:
+
+        db_table = 'documents'
+        verbose_name = 'Document'
+        verbose_name_plural = 'Documents'
+
+    def __str__(self):
+        return f'Document {self.doc_entry}'
