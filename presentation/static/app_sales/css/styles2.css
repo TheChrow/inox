@@ -1,0 +1,46 @@
+#resultadosClientes {
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
+    max-height: 150px;
+    overflow-y: auto;
+    /*position: absolute;*/    
+    width: 100%;
+    background-color: white;
+}
+
+.suggestion-item {
+    padding: 0.5em;
+    cursor: pointer;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+.suggestion-item:hover {
+    background-color: #e0e0e0;
+}
+
+#resultados{
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
+    max-height: 150px;
+    overflow-y: auto;
+    /* position: absolute; */
+    width: 100%;
+    background-color: white;
+}
+
+
+.agregar_productos {
+    padding: 0.5em;
+    cursor: pointer;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+.agregar_productos:hover {
+    background-color: #e0e0e0;
+}

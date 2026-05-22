@@ -1,0 +1,6 @@
+.nav-link.active {
+    border: 2px solid #007bff;  /* Color azul */
+    border-radius: 5px;         /* Bordes redondeados */
+    background-color: #f8f9fa;  /* Fondo gris claro */
+    color: #007bff !important;  /* Texto azul */
+}

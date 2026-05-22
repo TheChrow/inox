@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inox</title>
+
+  <link rel="icon" href="{% static 'inox/img/inox_icon.ico' %}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      min-height: 100vh;
+      background: linear-gradient(to bottom, #e32467, #733565);
+    }
+
+    .login-card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .login-logo {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+    }
+
+    .form-control:focus {
+      box-shadow: none;
+      border-color: #0d6efd;
+    }
+
+    .login-title {
+      font-weight: 600;
+    }
+
+    .login-subtitle {
+      font-size: 0.95rem;
+      color: #6c757d;
+    }
+
+    /* BOTÓN PERSONALIZADO (buena práctica) */
+    .btn-gradient {
+      background: linear-gradient(to bottom, #e32467, #733565);
+      border: none;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .btn-gradient:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body class="d-flex align-items-center justify-content-center">
+
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-10 col-md-6 col-lg-4">
+
+        <div class="card login-card p-4">
+
+          <div class="text-center mb-4">
+            <img src="{% static 'app_sales/img/inox_icon.ico' %}" alt="Logo" class="login-logo mb-2">
+            <h4 class="login-title mb-0">Luminox Chile</h4>
+            <small class="login-subtitle">Inox</small>
+          </div>
+
+          <form method="POST" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label for="username" class="form-label">Usuario</label>
+              <input 
+                type="text" 
+                name="username" 
+                id="username" 
+                class="form-control"
+                placeholder="Ingresa tu usuario"
+                required
+              >
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Contraseña</label>
+              <input 
+                type="password" 
+                name="password" 
+                id="password" 
+                class="form-control"
+                placeholder="••••••••"
+                required
+              >
+            </div>
+
+            {% if form.errors %}
+              <div class="alert alert-danger py-2">
+                Usuario o contraseña incorrectos.
+              </div>
+            {% endif %}
+
+            <div class="d-grid mb-3">
+              <button type="submit" class="btn btn-gradient">
+                Iniciar sesión
+              </button>
+            </div>
+
+            <div class="text-center">
+              <a href="#" class="text-decoration-none small">
+                ¿Olvidaste tu contraseña?
+              </a>
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

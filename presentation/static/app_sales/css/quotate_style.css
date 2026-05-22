@@ -1,0 +1,731 @@
+/*
+  ============================================================
+  INOX — quotate_style.css
+  Rediseño moderno. Solo overrides de diseño.
+  Clases e IDs del template intactos.
+  ============================================================
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+/* ── VARIABLES ─────────────────────────────────── */
+:root {
+  --pink:       #e32467;
+  --purple:     #733565;
+  --grad:       linear-gradient(135deg, #e32467, #733565);
+  --bg-page:    #f9f4f7;
+  --bg-card:    #ffffff;
+  --border:     rgba(115, 53, 101, .12);
+  --text-main:  #2a1020;
+  --text-muted: #9070a0;
+  --field-bg:   #f4eef2;
+  --radius-card:  14px;
+  --radius-field: 8px;
+  --shadow-card:  0 2px 16px rgba(115, 53, 101, .07);
+}
+
+/* ── BS-ICON (conservado del original) ─────────── */
+.fit-cover { object-fit: cover }
+
+.bs-icon {
+  --bs-icon-size: .75rem;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--bs-icon-size);
+  width: calc(var(--bs-icon-size) * 2);
+  height: calc(var(--bs-icon-size) * 2);
+  color: var(--bs-primary);
+}
+.bs-icon-xs { --bs-icon-size: 1rem; width: calc(var(--bs-icon-size) * 1.5); height: calc(var(--bs-icon-size) * 1.5) }
+.bs-icon-sm { --bs-icon-size: 1rem }
+.bs-icon-md { --bs-icon-size: 1.5rem }
+.bs-icon-lg { --bs-icon-size: 2rem }
+.bs-icon-xl { --bs-icon-size: 2.5rem }
+.bs-icon.bs-icon-primary      { color: var(--bs-white); background: var(--bs-primary) }
+.bs-icon.bs-icon-primary-light { color: var(--bs-primary); background: rgba(var(--bs-primary-rgb), .2) }
+.bs-icon.bs-icon-semi-white   { color: var(--bs-primary); background: rgba(255,255,255,.5) }
+.bs-icon.bs-icon-rounded      { border-radius: .5rem }
+.bs-icon.bs-icon-circle       { border-radius: 50% }
+
+/* ── BODY ──────────────────────────────────────── */
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-page);
+}
+
+/* ── CONTENEDOR PRINCIPAL ──────────────────────── */
+#contenedor.container {
+  padding-top:    1.5rem;
+  padding-bottom: 3rem;
+  padding-left:   1.5rem;
+  padding-right:  1.5rem;
+  max-width: 1280px;
+}
+
+/* ════════════════════════════════════════════════
+   FILA 1 — Búsqueda + botones de acción
+   ════════════════════════════════════════════════ */
+#contenedor > .row:first-child {
+  background:    var(--bg-card);
+  border-radius: var(--radius-card);
+  padding:       .85rem 1.25rem;
+  margin-bottom: -0.9rem;
+  margin-left:   0;
+  margin-right:  0;
+  box-shadow:    var(--shadow-card);
+  border:        0.5px solid rgba(227, 36, 103, .1);
+  align-items:   center;
+}
+
+/* Input búsqueda */
+#search_quotate {
+  font-family:   'Outfit', sans-serif;
+  font-size:     .82rem;
+  background:    var(--field-bg);
+  border:        1px solid var(--border);
+  border-radius: var(--radius-field);
+  padding:       6px 12px;
+  color:         var(--text-main);
+  outline:       none;
+  transition:    border-color .18s, box-shadow .18s;
+}
+#search_quotate:focus {
+  border-color: var(--pink);
+  box-shadow:   0 0 0 3px rgba(227, 36, 103, .1);
+}
+#search_quotate::placeholder { color: #c0a0b8; }
+
+/* ════════════════════════════════════════════════
+   BOTONES
+   ════════════════════════════════════════════════ */
+.btn-primary {
+  font-family:   'Outfit', sans-serif !important;
+  font-size:     .8rem !important;
+  font-weight:   600 !important;
+  background:    var(--grad) !important;
+  border:        none !important;
+  border-radius: 9px !important;
+  padding:       7px 16px !important;
+  letter-spacing:.2px;
+  transition:    opacity .18s, transform .15s !important;
+}
+.btn-primary:hover  { opacity: .88 !important; transform: translateY(-1px) !important; }
+.btn-primary:active { transform: translateY(0) !important; }
+
+.btn-secondary {
+  font-family:   'Outfit', sans-serif !important;
+  font-size:     .8rem !important;
+  font-weight:   600 !important;
+  background:    var(--bg-card) !important;
+  color:         var(--purple) !important;
+  border:        1.5px solid rgba(115, 53, 101, .25) !important;
+  border-radius: 9px !important;
+  padding:       7px 16px !important;
+  transition:    background .18s !important;
+}
+.btn-secondary:hover { background: rgba(115, 53, 101, .06) !important; }
+
+/* ── Dropdown menú ─────────────────────────────── */
+.dropdown-menu {
+  font-family:   'Outfit', sans-serif;
+  border:        0.5px solid rgba(227, 36, 103, .18);
+  border-radius: 12px;
+  box-shadow:    0 12px 36px rgba(115, 53, 101, .14);
+  padding:       6px;
+}
+.dropdown-item {
+  font-size:     .82rem;
+  font-weight:   500;
+  color:         #5a4055;
+  border-radius: 8px;
+  padding:       8px 14px;
+  transition:    background .15s, color .15s;
+}
+.dropdown-item:hover {
+  background: rgba(227, 36, 103, .08);
+  color:      var(--pink);
+}
+
+/* ════════════════════════════════════════════════
+   BARRA DE ESTADO — apuntamos directamente al row
+   que contiene #numero_cotizacion y .tipoDocumento
+   porque el selector style* no funciona cuando
+   Bootstrap resuelve las CSS vars en runtime.
+   ════════════════════════════════════════════════ */
+
+/* Fila que contiene el número de cotización */
+#numero_cotizacion,
+.tipoDocumento {
+  color:                   #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+/* El row padre de numero_cotizacion lo forzamos
+   via el contenedor más cercano con ID conocido */
+#contenedor > .row:has(#numero_cotizacion),
+#contenedor > .row:has(.tipoDocumento) {
+  background:    linear-gradient(135deg, #e32467, #733565) !important;
+  border-radius: var(--radius-card) !important;
+  padding:       .8rem 1.25rem !important;
+  margin-left:   0 !important;
+  margin-right:  0 !important;
+  margin-bottom: .5rem !important;
+}
+
+/* Todos los textos dentro de ese row */
+#contenedor > .row:has(#numero_cotizacion) p,
+#contenedor > .row:has(#numero_cotizacion) label,
+#contenedor > .row:has(.tipoDocumento) p,
+#contenedor > .row:has(.tipoDocumento) label {
+  color:                   #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  font-size:               .85rem !important;
+  font-weight:             500 !important;
+  margin:                  0 !important;
+}
+
+/* Tipografía específica */
+.tipoDocumento {
+  font-size:      .72rem !important;
+  font-weight:    700 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+}
+#numero_cotizacion {
+  font-size:   1.2rem !important;
+  font-weight: 800 !important;
+}
+
+/* Fallback: mantener el selector original por si acaso */
+.row[style*="background: var(--bs-body-color)"],
+.row[style*="background:var(--bs-body-color)"] {
+  background:    linear-gradient(135deg, #e32467, #733565) !important;
+  border-radius: var(--radius-card) !important;
+  padding:       .8rem 1.25rem !important;
+  margin-left:   0 !important;
+  margin-right:  0 !important;
+  margin-bottom: .5rem !important;
+}
+.row[style*="background: var(--bs-body-color)"] p,
+.row[style*="background:var(--bs-body-color)"] p,
+.row[style*="background: var(--bs-body-color)"] label,
+.row[style*="background:var(--bs-body-color)"] label {
+  color:                   #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  font-size:               .85rem !important;
+  font-weight:             500 !important;
+  margin:                  0 !important;
+}
+
+/* ── INPUT CUPÓN ─────────────────────────────────── */
+#cupon_data {
+  font-family:   'Outfit', sans-serif !important;
+  font-size:     .82rem !important;
+  border:        1.5px solid rgba(255, 255, 255, .55) !important;
+  border-right:  none !important;
+  border-radius: var(--radius-field) 0 0 var(--radius-field) !important;
+  background:    rgba(115, 53, 101, .45) !important;
+  color:         #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+#cupon_data::placeholder { color: rgba(255, 255, 255, .65) !important; }
+#cupon_data:focus {
+  background:   rgba(115, 53, 101, .65) !important;
+  border-color: rgba(255, 255, 255, .85) !important;
+  box-shadow:   0 0 0 3px rgba(255, 255, 255, .15) !important;
+  outline:      none !important;
+}
+
+/* ── BOTÓN APLICAR ───────────────────────────────── */
+#btn-aplicar-cupon {
+  font-family:    'Outfit', sans-serif !important;
+  font-size:      .8rem !important;
+  font-weight:    700 !important;
+  border-radius:  0 var(--radius-field) var(--radius-field) 0 !important;
+  background:     rgba(227, 36, 103, .55) !important;
+  border:         1.5px solid rgba(255, 255, 255, .55) !important;
+  border-left:    none !important;
+  color:          #fff !important;
+  letter-spacing: .3px !important;
+  transition:     background .18s !important;
+}
+#btn-aplicar-cupon:hover {
+  background: rgba(227, 36, 103, .78) !important;
+  opacity:    1 !important;
+  transform:  none !important;
+}
+
+/* ── LABEL "CÓDIGO" sobre la barra ──────────────── */
+.row[style*="background: var(--bs-body-color)"] .col-form-label,
+.row[style*="background:var(--bs-body-color)"] .col-form-label {
+  color:                   #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  opacity: 1 !important;
+}
+
+/* ════════════════════════════════════════════════
+   INFO DEL VENDEDOR — row con #f0f2f5
+   ════════════════════════════════════════════════ */
+.row[style*="background: #f0f2f5"],
+.row[style*="background:#f0f2f5"] {
+  background:  var(--bg-card) !important;
+  padding:     .4rem 1.25rem;
+  margin-left: 0;
+  margin-right:0;
+}
+
+.row[style*="background: #f0f2f5"] p,
+.row[style*="background:#f0f2f5"] p {
+  font-family: 'Outfit', sans-serif;
+  font-size:   .85rem;
+  color:       #5a3050;
+  margin:      0;
+  padding:     .25rem 0;
+}
+
+/* Agrupa todo el formulario en una card */
+#forCrearPedidos {
+  background:    var(--bg-card);
+  border-radius: var(--radius-card);
+  box-shadow:    var(--shadow-card);
+  border:        0.5px solid rgba(227, 36, 103, .08);
+  padding:       1.25rem;
+  margin-bottom: .75rem;
+}
+
+/* ════════════════════════════════════════════════
+   LABELS
+   ════════════════════════════════════════════════ */
+.col-form-label {
+  font-family:    'Outfit', sans-serif;
+  font-size:      .75rem !important;
+  font-weight:    600;
+  color:          var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+/* ════════════════════════════════════════════════
+   INPUTS & SELECTS
+   ════════════════════════════════════════════════ */
+.form-control,
+.form-select {
+  font-family:   'Outfit', sans-serif;
+  font-size:     .83rem;
+  background:    var(--field-bg);
+  border:        1px solid var(--border) !important;
+  border-radius: var(--radius-field);
+  color:         var(--text-main);
+  padding:       6px 10px;
+  transition:    border-color .18s, box-shadow .18s, background .18s;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--pink) !important;
+  box-shadow:   0 0 0 3px rgba(227, 36, 103, .1);
+  background:   #fff;
+  outline:      none;
+}
+.form-control::placeholder { color: #c0a0b8; }
+
+/* Input group */
+.input-group .form-control {
+  border-right:  none !important;
+  border-radius: var(--radius-field) 0 0 var(--radius-field) !important;
+}
+.input-group .btn {
+  border-radius: 0 var(--radius-field) var(--radius-field) 0 !important;
+}
+
+/* ════════════════════════════════════════════════
+   RADIO BUTTONS
+   ════════════════════════════════════════════════ */
+.form-check-input {
+  border-color: rgba(227, 36, 103, .4);
+  cursor:       pointer;
+  transition:   background .15s;
+}
+.form-check-input:checked {
+  background-color: var(--pink);
+  border-color:     var(--pink);
+}
+.form-check-label {
+  font-family: 'Outfit', sans-serif;
+  font-size:   .83rem;
+  font-weight: 500;
+  color:       #5a3050;
+  cursor:      pointer;
+}
+
+/* ════════════════════════════════════════════════
+   ACCORDION — Mapa de relaciones
+   ════════════════════════════════════════════════ */
+.accordion-item {
+  border:        0.5px solid var(--border) !important;
+  border-radius: var(--radius-field) !important;
+  overflow:      hidden;
+  background:    var(--field-bg) !important;
+}
+.accordion-button {
+  font-family: 'Outfit', sans-serif;
+  font-size:   .83rem !important;
+  font-weight: 600;
+  color:       var(--text-muted);
+  background:  var(--field-bg);
+}
+.accordion-button:not(.collapsed) {
+  background: rgba(227, 36, 103, .07);
+  color:      var(--pink);
+  box-shadow: none;
+}
+.accordion-button:focus { box-shadow: none; }
+
+/* ════════════════════════════════════════════════
+   TABLA DE PRODUCTOS
+   ════════════════════════════════════════════════ */
+.table-responsive {
+  border-radius: var(--radius-card);
+  overflow:      hidden;
+  border:        0.5px solid rgba(227, 36, 103, .1);
+  box-shadow:    var(--shadow-card);
+  margin-bottom: .75rem;
+}
+
+#productos {
+  margin:           0;
+  border-collapse:  collapse;
+}
+
+/* Header */
+#productos thead tr {
+  background: var(--grad) !important;
+}
+#productos thead th {
+  font-family:    'Outfit', sans-serif;
+  font-size:      .72rem !important;
+  font-weight:    600;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color:          #fff !important;
+  background:     transparent !important;
+  padding:        11px 14px;
+  border:         none !important;
+}
+
+/* Cuerpo */
+#productos tbody tr {
+  border-bottom: 1px solid rgba(115, 53, 101, .07);
+  transition:    background .15s;
+}
+#productos tbody tr:last-child { border-bottom: none; }
+#productos tbody tr:hover td  { background: rgba(227, 36, 103, .03); }
+#productos tbody td {
+  font-family: 'Outfit', sans-serif;
+  font-size:   .82rem;
+  color:       #4a2a40;
+  padding:     10px 14px;
+  border:      none !important;
+  background:  var(--bg-card);
+}
+
+/* ════════════════════════════════════════════════
+   BÚSQUEDA DE PRODUCTOS
+   ════════════════════════════════════════════════ */
+#inputNumero { font-size: .82rem; }
+#resultados  {
+  font-family: 'Outfit', sans-serif;
+  font-size:   .78rem;
+  color:       var(--text-muted);
+  margin-top:  4px;
+}
+
+/* ════════════════════════════════════════════════
+   OBSERVACIONES
+   ════════════════════════════════════════════════ */
+#Observaciones-1 {
+  font-family:   'Outfit', sans-serif;
+  font-size:     .83rem;
+  background:    var(--field-bg);
+  border:        1px solid var(--border) !important;
+  border-radius: var(--radius-card);
+  color:         var(--text-main);
+  resize:        vertical;
+  transition:    border-color .18s, box-shadow .18s;
+}
+#Observaciones-1:focus {
+  border-color: var(--pink) !important;
+  box-shadow:   0 0 0 3px rgba(227, 36, 103, .1);
+  background:   #fff;
+}
+#Observaciones-1::placeholder { color: #c0a0b8; }
+
+/* ════════════════════════════════════════════════
+   TOTALES
+   ════════════════════════════════════════════════ */
+#total_neto small,
+#iva small,
+#total_bruto small {
+  font-family: 'Outfit', sans-serif;
+  font-size:   .83rem;
+  font-weight: 600;
+  color:       var(--text-main);
+}
+
+/* Total con descuento — destacado */
+#total_descuento small {
+  font-family:              'Outfit', sans-serif;
+  font-size:                .95rem;
+  font-weight:              800;
+  background:               var(--grad);
+  -webkit-background-clip:  text;
+  -webkit-text-fill-color:  transparent;
+}
+
+/* Labels de totales */
+.col-sm-7.text-end small b {
+  font-family: 'Outfit', sans-serif;
+  font-size:   .78rem;
+  font-weight: 600;
+  color:       var(--text-muted);
+}
+
+/* ════════════════════════════════════════════════
+   BOTÓN GUARDAR FINAL
+   ════════════════════════════════════════════════ */
+#saveButton,
+#saveButton2 {
+  min-width: 100px;
+  font-family:   'Outfit', sans-serif !important;
+  font-size:     .85rem !important;
+  font-weight:   700 !important;
+  background:    var(--grad) !important;
+  border:        none !important;
+  border-radius: 9px !important;
+  padding:       9px 18px !important;
+  letter-spacing:.3px !important;
+  margin-top: auto !important;
+}
+
+/* ════════════════════════════════════════════════
+   AUTOCOMPLETE — resultados clientes/productos
+   ════════════════════════════════════════════════ */
+#resultadosClientes {
+  font-family:   'Outfit', sans-serif;
+  background:    var(--bg-card);
+  border:        0.5px solid var(--border);
+  border-radius: var(--radius-field);
+  box-shadow:    0 8px 24px rgba(115, 53, 101, .1);
+  margin-top:    2px;
+  overflow:      hidden;
+}
+
+/* ════════════════════════════════════════════════
+   MODALES
+   ════════════════════════════════════════════════ */
+.modal-content {
+  font-family:   'Outfit', sans-serif;
+  border:        none !important;
+  border-radius: var(--radius-card);
+  box-shadow:    0 20px 60px rgba(115, 53, 101, .2);
+  overflow:      hidden;
+}
+.modal-header {
+  background:    var(--grad);
+  border-bottom: none;
+  padding:       1rem 1.25rem;
+}
+.modal-title {
+  color:       #fff;
+  font-weight: 700;
+  font-size:   1rem;
+}
+.btn-close { filter: brightness(10); opacity: .8; }
+
+.modal-body {
+  background: var(--bg-page);
+  padding:    1.25rem;
+}
+.modal-body .row[style*="#f0f2f5"] {
+  background:  transparent !important;
+  padding-top: .3rem;
+  padding-bottom: .3rem;
+}
+
+.modal-footer {
+  background:  var(--bg-card);
+  border-top:  0.5px solid var(--border);
+  padding:     .85rem 1.25rem;
+}
+
+/* ════════════════════════════════════════════════
+   TABS (dentro de modal)
+   ════════════════════════════════════════════════ */
+.nav-tabs {
+  border-bottom: 1px solid var(--border);
+  gap:           4px;
+}
+.nav-tabs .nav-link {
+  font-family:   'Outfit', sans-serif;
+  font-size:     .82rem;
+  font-weight:   600;
+  color:         var(--text-muted);
+  border:        none;
+  border-radius: 8px 8px 0 0;
+  padding:       7px 16px;
+  transition:    color .18s, background .18s;
+}
+.nav-tabs .nav-link.active {
+  color:         var(--pink);
+  background:    rgba(227, 36, 103, .08);
+  border-bottom: 2px solid var(--pink);
+}
+.nav-tabs .nav-link:hover:not(.active) {
+  color:       var(--purple);
+  background:  rgba(115, 53, 101, .05);
+}
+.tab-content { padding-top: .75rem; }
+
+/* ════════════════════════════════════════════════
+   ICONOS SVG (agregar dirección / contacto)
+   ════════════════════════════════════════════════ */
+#agregar_dir,
+#agregar_cont {
+  color:      var(--pink);
+  cursor:     pointer;
+  transition: color .2s, transform .2s;
+}
+#agregar_dir:hover,
+#agregar_cont:hover {
+  color:     var(--purple);
+  transform: scale(1.08);
+}
+
+/* ════════════════════════════════════════════════
+   SPINNER / OVERLAY
+   ════════════════════════════════════════════════ */
+#loadingOverlay {
+  background:      rgba(249, 244, 247, .85) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* ════════════════════════════════════════════════
+   MENSAJES / ALERTS
+   ════════════════════════════════════════════════ */
+#contenedor-mensajes .alert,
+#contenedor-mensajes-3 .alert {
+  font-family:   'Outfit', sans-serif;
+  font-size:     .83rem;
+  border:        none;
+  border-radius: var(--radius-field);
+}
+
+/* ════════════════════════════════════════════════
+   FILAS DE SEPARACIÓN VACÍAS (spacers)
+   ════════════════════════════════════════════════ */
+.row:has(> .col > p:empty) {
+  padding:    .1rem 0;
+  background: transparent !important;
+}
+
+/* ════════════════════════════════════════════════
+   CLASE HELPER — aplica directamente en el template
+   Agrega class="inox-status-bar" al row del header
+   de cotización para garantizar el gradiente.
+   ════════════════════════════════════════════════ */
+.inox-status-bar {
+  background:    linear-gradient(135deg, #e32467, #733565) !important;
+  border-radius: var(--radius-card) !important;
+  padding:       .8rem 1.25rem !important;
+  margin-left:   0 !important;
+  margin-right:  0 !important;
+  margin-bottom: .5rem !important;
+}
+.inox-status-bar p,
+.inox-status-bar label,
+.inox-status-bar .col-form-label {
+  color:                   #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  font-size:               .85rem !important;
+  font-weight:             500 !important;
+  margin:                  0 !important;
+}
+
+
+.data-store {
+  background:  var(--bg-card) !important;
+  border:      0.5px solid rgba(227, 36, 103, .08);
+  border-radius: var(--radius-card);
+  box-shadow:    var(--shadow-card);
+  padding:       .75rem 1.25rem;
+  margin-bottom: .75rem;
+}
+
+/* ════════════════════════════════════════════════
+   SUBRAYADO-SUPERIOR (conservado del original)
+   ════════════════════════════════════════════════ */
+.subrayado-superior { text-decoration: overline; }
+
+/* ════════════════════════════════════════════════
+   RESPONSIVE — breakpoints
+   ════════════════════════════════════════════════ */
+
+/* Status bar: wrap coupon group on small screens */
+@media (max-width: 767.98px) {
+  .inox-status-bar {
+    flex-wrap:  wrap;
+    gap:        .4rem 0;
+    row-gap:    .5rem;
+  }
+  .inox-status-bar .col,
+  .inox-status-bar [class*="col-"] {
+    min-width: 50%;
+  }
+  .inox-status-bar .input-group {
+    max-width: 100% !important;
+  }
+
+  /* Form card: reduce padding on mobile */
+  #forCrearPedidos {
+    padding: .75rem;
+  }
+
+  /* Main container: tighter side padding */
+  #contenedor.container {
+    padding-left:  .75rem;
+    padding-right: .75rem;
+  }
+
+  /* Toolbar search takes full row on xs */
+  #search_quotate {
+    width: 100% !important;
+  }
+
+  /* Table cells: reduce padding so table fits */
+  #productos thead th,
+  #productos tbody td {
+    padding: 7px 8px;
+    font-size: .75rem !important;
+  }
+
+  /* Totals labels align left on xs */
+  .col-sm-7.text-end {
+    text-align: left !important;
+  }
+
+  /* Save button full-width on xs */
+  #saveButton {
+    width: 100%;
+  }
+}
+
+/* Medium screens: tighten status bar label columns */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .inox-status-bar .col {
+    flex: 0 0 auto;
+  }
+  #forCrearPedidos {
+    padding: 1rem;
+  }
+}

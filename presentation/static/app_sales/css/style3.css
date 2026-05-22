@@ -1,0 +1,42 @@
+#contenedor-mensajes {
+    position: fixed; /* Fija el contenedor en la pantalla */
+    top: 10px; /* Coloca el contenedor 10px desde la parte superior */
+    left: 50%;
+    transform: translateX(-50%); /* Centra el contenedor en la pantalla */
+    z-index: 9999; /* Asegura que el mensaje quede encima de otros elementos */
+    width: auto;
+    max-width: 90%; /* Limita el tamaño del contenedor */
+}
+
+.mensaje {
+    position: relative; /* Para que el mensaje se posicione dentro del contenedor */
+    margin-bottom: 10px; /* Espacio entre los mensajes */
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.alert {
+    display: block; /* Asegura que el mensaje sea visible */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil para destacar el mensaje */
+}
+
+/* #loader {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid #3498db;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  } */
+  

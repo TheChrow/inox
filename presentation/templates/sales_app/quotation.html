@@ -1,0 +1,921 @@
+{% load static %}
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <title>Studio GO</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'app_sales/img/inox_icon.ico' %}">
+    <link rel="stylesheet" href="{% static 'app_sales/css/moreStyles.css' %}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{% static 'app_sales/css/styles2.css' %}" />
+    <link rel="stylesheet" href="{% static 'app_sales/css/quotate_style.css' %}" />
+    <link rel="stylesheet"href="{% static 'app_sales/css/style3.css' %}" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="{% static 'app_sales/js/quotations_insert.js' %}"></script>
+    <script src="{% static 'app_sales/js/sucursales_select.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <style>
+      .subrayado-superior {
+          text-decoration: overline;
+      }
+    </style>
+
+    <script>
+          document.querySelectorAll(".calcular_cantidad").forEach(input => {
+              input.addEventListener("click", function() {
+                  this.select();
+              });
+          });
+
+          document.querySelectorAll(".agg_descuento").forEach(input => {
+              input.addEventListener("click", function() {
+                  this.select();
+              });
+          });
+    </script>
+
+    <script>
+        function actualizarGiro() {
+            let selectedRadio = document.querySelector('input[name="grupoSN"]:checked'); 
+            let giroSN = document.getElementById("giroSN");
+
+            // Verifica si el radio seleccionado es "Persona Natural" o "Empresa"
+            if (selectedRadio) {
+                if (selectedRadio.value === "105") {
+                    giroSN.value = "Persona Natural"; // Establece "Persona Natural" si es Persona
+                } else if (selectedRadio.value === "106" || selectedRadio.value === "100") {
+                    giroSN.value = ""; // Borra el contenido si es Empresa
+                }
+            }
+        }
+
+        // Agrega el evento change a ambos radio buttons
+        document.addEventListener("DOMContentLoaded", function() {
+            // Configuración inicial
+            actualizarGiro();
+            
+            // Agregar evento a todos los radio buttons del grupo
+            let radioButtons = document.querySelectorAll('input[name="grupoSN"]');
+            radioButtons.forEach(function(radio) {
+                radio.addEventListener('change', actualizarGiro);
+            });
+        });
+
+    </script>
+
+  </head>
+
+  <body>
+    <!-- Start: Navbar Right Links -->
+    {% include "barra.html" %}
+    <!-- End: Navbar Right Links -->
+    <div id="contenedor" class="container">
+      <div class="row g-2 align-items-center flex-wrap" style="color: var(--bs-secondary-color)">
+        <div class="col-12 col-sm">
+          <input type="search" placeholder="Buscar Número Cotización"
+            id="search_quotate" style="width: 100%" />
+        </div>
+
+        <div class="col-auto" hidden>
+          <svg id="lupa-busqueda" xmlns="http://www.w3.org/2000/svg" width="20"
+            height="20" fill="gray"
+            class="bi bi-search" viewBox="0 0 16 16"
+            style="cursor: pointer; margin-top: 6px">
+            <path
+              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001a1.007 1.007 0 0 0-.058.058l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.059-.058zm-5.442-9.29a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11z" />
+          </svg>
+        </div>
+        <div class="col-auto">
+          <a class="btn btn-primary" role="button" href="{% url 'generate_quote' %}">+ Nueva Cotización</a>
+        </div>
+
+        <div class="col-auto ms-auto">
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle"
+              aria-expanded="false" data-bs-toggle="dropdown" type="button"
+              style="font-size: 12px">
+              Acciones&nbsp;
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="#" id="saveButton2">Guardar</a>
+              <a class="dropdown-item" href="#" id="duplicar-1">Duplicar</a>
+              <a class="dropdown-item" href="#" id="copiar-ODV">Copiar a Orden
+                de Venta</a>
+              <!-- <a class="dropdown-item" href="solic_devolucion.html">Copiar a Solicitud de Devolución</a> -->
+              <a class="dropdown-item" href="#" id="generarPDF">PDF Personas
+                (Bruto)</a>
+              <a class="dropdown-item" href="#" id="generar_pdf_empresa"><strong>PDF Empresas(Neto)</strong></a>
+              <!-- <a class="dropdown-item" id="cerrar">Cerrar</a> -->
+              <!--  <a class="dropdown-item" id="cancelar">Cancelar</a> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="contenedor-mensajes"></div>
+
+      <div class="row">
+        <div class="col">
+          <p></p>
+        </div>
+      </div>
+      <div class="row inox-status-bar" style="background: var(--bs-body-color)">
+        <div class="col" style="padding-top: 12px">
+          <p class="tipoDocumento" style="
+              padding-bottom: 0px;
+              padding-top: 0px;
+              color: var(--bs-body-bg);
+            ">
+            Cotización
+          </p>
+        </div>
+        <div class="col" style="text-align: right; padding-top: 12px">
+          <p style="
+              padding-bottom: 0px;
+              padding-top: 0px;
+              color: var(--bs-body-bg);
+            ">
+            Nº
+          </p>
+        </div>
+        <div class="col" style="text-align: left; padding-top: 12px">
+          <p id="numero_cotizacion" data-type="COTI" data-docEntry style="
+              padding-bottom: 0px;
+              padding-top: 0px;
+              color: var(--bs-body-bg);
+            "></p>
+        </div>
+        <div class="col" style="text-align: right; padding-top: 12px">
+          <label class="col-form-label"
+            style="font-size: 13px; color: var(--bs-body-bg);">Código</label>
+          <!-- Estados -->
+        </div>
+        <div class="col" style="text-align: left; padding-top: 12px; padding-bottom: 0px">
+          <!-- Estados -->
+          <div class="input-group" style="max-width: 300px;">
+            <input
+              class="form-control"
+              type="text"
+              id="cupon_data"
+              name="Cupon_id"
+              placeholder="Ingrese Un Cupón..."
+              style="font-size: 12px; border-color: rgb(159, 168, 175)" />
+            <button class="btn btn-primary" type="button" id="btn-aplicar-cupon"
+              style="font-size: 12px;">
+              Aplicar
+            </button>
+          </div>
+          <p style="
+              padding-bottom: 0px;
+              padding-top: 0px;
+              color: var(--bs-body-bg);
+            "></p>
+        </div>
+      </div>
+      <div class="row" style="background: #f0f2f5">
+        <div class="col">
+          <p></p>
+        </div>
+      </div>
+
+      <div class="row data-store" style="background: #f0f2f5">
+        <div class="col-sm-5">
+          <p>
+            Vendedor:&nbsp; {% if username %}
+            <strong id="vendedor_data" data-codeVen="{{codigoVendedor}}">
+              {{ nombreuser }}</strong>&nbsp;
+          </p>
+     </div>
+        <div class="col">
+          <p>Showroom:&nbsp;<strong id="sucursal">{{ sucursal }}</strong></p>
+        </div>
+        <div class="col">
+          <p>
+            Estado:&nbsp;<strong id="estado"
+              data-estado="bost_Open">Abierta</strong>
+          </p>
+        </div>
+        {% else %}
+        <p>No has iniciado sesión.</p>
+        {% endif %}
+      </div>
+      <form id="forCrearPedidos" method="POST"
+        action="{% url 'generate_quote' %}">
+        <div class="row" style="background: #f0f2f5">
+          <div class="col-12 col-lg-8">
+            <div class="row g-2 align-items-center">
+              <div class="col-12 col-sm-3">
+                <label class="col-form-label"
+                  style="font-size: 13px">Cliente</label>
+              </div>
+              <div class="col-12 col-sm pe-sm-0">
+                <input class="form-control" type="text" name="cliente"
+                  style="border-color: rgb(159, 168, 175); font-size: 12px"
+                  id="inputCliente" data-rut
+                  data-codigoSN />
+                <div id="resultadosClientes" style="font-size: 11px"></div>
+              </div>
+
+              <div class="col-auto ps-0">
+                <!-- Start: Modal -->
+                <div>
+                  <button class="btn btn-primary" type="button"
+                    data-bs-toggle="modal" data-bs-target="#clienteModal"
+                    style="font-size: 12px">
+                    ★
+                  </button>
+                  <div class="modal fade" role="dialog" tabindex="-1"
+                    id="clienteModal"
+                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content" style="width: 100%">
+                        <div class="modal-header">
+                          <h1 class="fs-5 modal-title" id="exampleModalLabel-4">
+                            Agregar / Editar Cliente
+                          </h1>
+                          <button class="btn-close" type="button"
+                            aria-label="Close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row" style="background: #f0f2f5">
+                            <div class="col">
+                              <p></p>
+                            </div>
+                          </div>
+
+                          <!-- Parte superior: Nombre y Apellido en una mitad, Radio buttons en la otra mitad -->
+                          <div class="row" style="background: #f0f2f5">
+                            <!-- Columna izquierda: Nombre y Apellido -->
+                            <div class="col-sm-6">
+                              <div class="row">
+                                <div class="col-sm-4">
+                                  <label id="nombreLabel" class="col-form-label"
+                                    style="font-size: 13px">Nombre</label>
+                                </div>
+                                <div class="col-sm-8">
+                                  <input class="form-control" type="text"
+                                    name="nombreSN" id="nombreSN"
+                                    value="{{ nombre }}" style="
+                                      border-color: rgb(159, 168, 175);
+                                      font-size: 12px;
+                                    " />
+                                </div>
+                              </div>
+
+                              <div class="row mt-2">
+                                <div class="col-sm-4">
+                                  <label class="col-form-label"
+                                    style="font-size: 13px"
+                                    id="apellidorow">Apellido</label>
+                                </div>
+                                <div class="col-sm-8">
+                                  <input class="form-control" type="text"
+                                    name="apellidoSN" id="apellidoSN"
+                                    value="{{ apellido }}" style="
+                                      border-color: rgb(159, 168, 175);
+                                      font-size: 12px;
+                                    " />
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Columna derecha: Radio buttons -->
+                            <div class="col-sm-6">
+                              <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                  id="formCheck-5" name="grupoSN" value="105"
+                                  style="border-color: rgb(159, 168, 175)"
+                                  checked
+                                  onchange="cambiarLabel('grupoSN', 'nombreLabel', 'apellidoSN', 'apellidorow')" />
+                                <label class="form-check-label"
+                                  for="formCheck-5">Persona</label>
+                              </div>
+
+                              <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                  id="formCheck-6" name="grupoSN" value="100"
+                                  style="border-color: rgb(159, 168, 175)"
+                                  onchange="cambiarLabel('grupoSN', 'nombreLabel', 'apellidoSN', 'apellidorow')" />
+                                <label class="form-check-label"
+                                  for="formCheck-6">Empresa</label>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Parte inferior: RUT, Giro, Teléfono y Email -->
+                          <div class="row" style="background: #f0f2f5">
+                            <div class="col-sm-2">
+                              <label class="col-form-label"
+                                style="font-size: 13px">RUT</label>
+                            </div>
+                            <div class="col-sm-4">
+                              <input class="form-control" type="text"
+                                name="rutSN" id="rutSN" value="{{ rut }}"
+                                style="
+                                  border-color: rgb(159, 168, 175);
+                                  font-size: 12px;
+                                " />
+                            </div>
+                            <div class="col-sm-2" style="text-align: right">
+                              <label class="col-form-label"
+                                style="font-size: 13px">Giro</label>
+                            </div>
+                            <div class="col-sm-4">
+                              <input class="form-control" type="text"
+                                name="giroSN" id="giroSN" value="{{ giro }}"
+                                style="
+                                  border-color: rgb(159, 168, 175);
+                                  font-size: 12px;
+                                " />
+                            </div>
+                          </div>
+
+                          <div class="row" style="background: #f0f2f5">
+                            <div class="col-sm-2">
+                              <label class="col-form-label"
+                                style="font-size: 13px">Teléfono</label>
+                            </div>
+                            <div class="col-sm-4">
+                              <input class="form-control" type="tel"
+                                name="telefonoSN" id="telefonoSN"
+                                value="{{telefono|default:"+56" }}"
+                                style="border-color: rgb(159,168,175); font-size:
+                              12px;" maxlength="14">
+                            </div>
+                            <div class="col-sm-2" style="text-align: right">
+                              <label class="col-form-label"
+                                style="font-size: 13px">Email</label>
+                            </div>
+                            <div class="col-sm-4">
+                              <input class="form-control" type="email"
+                                name="emailSN" id="emailSN" value="{{ nombre }}"
+                                style="
+                                  border-color: rgb(159, 168, 175);
+                                  font-size: 12px;
+                                " />
+                            </div>
+                          </div>
+
+                          <div class="row" id="svgdircont">
+                            <div class="col" style="padding: 0px">
+                              <div>
+                                <ul class="nav nav-tabs" role="tablist">
+                                  <li class="nav-item" role="sales_app">
+                                    <a class="nav-link active" role="tab"
+                                      data-bs-toggle="tab"
+                                      href="#tab-1">Direcciones</a>
+                                  </li>
+                                  <li class="nav-item" role="sales_app">
+                                    <a class="nav-link" role="tab"
+                                      data-bs-toggle="tab"
+                                      href="#tab-2">Contactos</a>
+                                  </li>
+                                </ul>
+
+                                <div class="tab-content">
+                                  <!--Agregar direccion-->
+                                  <div class="tab-pane active" role="tabpanel"
+                                    id="tab-1">
+                                    <div class="row" style="
+                                        margin-right: 0px;
+                                        margin-left: 0px;
+                                      ">
+                                      <div class="col-sm-12"
+                                        style="width: 100%">
+                                        <a
+                                          class="navbar-brand d-flex align-items-center"
+                                          style="width: 107px">
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="1em" height="1em"
+                                            fill="currentColor"
+                                            viewBox="0 0 16 16"
+                                            class="bi bi-building-fill-add"
+                                            style="font-size: 45px"
+                                            id="agregar_dir">
+                                            <path
+                                              d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0">
+                                            </path>
+                                            <path
+                                              d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7.256A4.493 4.493 0 0 0 12.5 8a4.493 4.493 0 0 0-3.59 1.787A.498.498 0 0 0 9 9.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .39-.187A4.476 4.476 0 0 0 8.027 12H6.5a.5.5 0 0 0-.5.5V16H3a1 1 0 0 1-1-1zm2 1.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5m3 0v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5m3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5M7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5M4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z">
+                                            </path>
+                                          </svg>
+                                        </a>
+                                      </div>
+                                    </div>
+                                    <div id="dir"></div>
+                                  </div>
+
+                                  <!--Agregar contacto-->
+                                  <div class="tab-pane" role="tabpanel"
+                                    id="tab-2">
+                                    <div class="row" style="
+                                        margin-right: 0px;
+                                        margin-left: 0px;
+                                      ">
+                                      <div class="col-sm-12"
+                                        style="width: 100%">
+                                        <a
+                                          class="navbar-brand d-flex align-items-center"
+                                          style="width: 107px">
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="1em" height="1em"
+                                            fill="currentColor"
+                                            viewBox="0 0 16 16"
+                                            class="bi bi-person-fill-add"
+                                            style="font-size: 45px"
+                                            id="agregar_cont">
+                                            <path
+                                              d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0">
+                                            </path>
+                                            <path
+                                              d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4">
+                                            </path>
+                                          </svg>
+                                        </a>
+                                      </div>
+                                    </div>
+                                    <div id="cont"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <div id="contenedor-mensajes-3"></div>
+                          <button class="btn btn-secondary" type="button"
+                            data-bs-dismiss="modal">
+                            Cerrar
+                          </button>
+                          <button class="btn btn-primary" id="grabar-btn"
+                            type="submit">
+                            Grabar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- End: Modal -->
+              </div>
+            </div>
+
+            <div class="row g-2 align-items-center">
+              <div class="col-12 col-sm-3">
+                <label class="col-form-label"
+                  style="font-size: 13px">Contacto</label>
+              </div>
+              <div class="col-12 col-sm pe-sm-0">
+                <select id="contactos_cliete" class="form-select"
+                  style="font-size: 12px; border-color: rgb(159, 168, 175)">
+                  <optgroup label="Contacto" id="clientes"
+                    value="Seleccione una dirección de despacho">
+                    <option value data-contact>
+                      Seleccione un contacto
+                    </option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <!--Esta es la parte que trae contactos con el boton -->
+              <div class="col-auto ps-0">
+                <!-- Start: Modal -->
+                <div>
+                  <button class="btn btn-primary" type="button"
+                    data-bs-toggle="modal" data-bs-target="#contactoModal"
+                    style="font-size: 12px" id="botonmodalcontacto">
+                    ★</button><!-- Boton sua-->
+                  <div class="modal fade" role="dialog" tabindex="-1"
+                    id="contactoModal"
+                    aria-labelledby="contactoModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content"
+                        style="width: 100%; position: absolute; left: 50%; transform: translateX(-50%);">
+                        {% include "sales_app/crear_contacto.html" %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- End: Modal -->
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-3 col-xl-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="formCheck-7"
+                name="tipoDocTributario" value="BOLE"
+                style="border-color: rgb(159, 168, 175)" checked /><label
+                class="form-check-label"
+                for="formCheck-7">Boleta</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="formCheck-8"
+                name="tipoDocTributario" value="FACT"
+                style="border-color: rgb(159, 168, 175)" /><label
+                class="form-check-label"
+                for="formCheck-8">Factura</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="background: #f0f2f5">
+          <div class="col-12 col-sm-3 col-md-2">
+            <label class="col-form-label" style="font-size: 13px">Tipo
+              Entrega</label>
+          </div>
+          <div class="col-12 col-sm-7 col-md-5">
+            <select class="form-select" id="tipoEntrega-1"
+              style="font-size: 12px; border-color: rgb(159, 168, 175)">
+              <optgroup label="Entrega">
+                <option value="1" selected>Directa</option>
+                <option value="5">Despacho</option>
+                <option value="2">Retiro Panal</option>
+                <option value="3">Retiro LC</option>
+                <option value="4">Retiro PH</option>
+                <option value="6">Retiro VI</option>
+                <option value="7">Retiro GR</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="background: #f0f2f5">
+          <div class="col-12 col-sm-3 col-md-2">
+            <label class="col-form-label" style="font-size: 13px">Dirección
+              Despacho</label>
+          </div>
+          <div class="col-12 col-sm pe-sm-0">
+            <select id="direcciones_despacho" class="form-select"
+              style="font-size: 12px; border-color: rgb(159, 168, 175)">
+              <optgroup label="Direcciones de Despacho">
+                <option value>Seleccione una dirección de despacho</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="col-auto ps-0">
+            <!-- Start: Modal -->
+            <div>
+              <button class="btn btn-primary" type="button"
+                data-bs-toggle="modal" data-bs-target="#dirDespModal"
+                style="font-size: 12px">
+                ★
+              </button>
+              <div class="modal fade" role="dialog" tabindex="-1"
+                id="dirDespModal" aria-labelledby="dirDespModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content"
+                    style="width: 200%; position: absolute; left: 50%; transform: translateX(-50%);">
+                    {% include "sales_app/crear_dirdespacho.html" %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- End: Modal -->
+          </div>
+
+          <div class="col-auto text-end">
+            <label class="col-form-label" style="font-size: 13px"
+              id="docDate" hidden>Válido Hasta</label>
+          </div>
+          <div class="col-auto">
+            <label class="col-form-label"
+              style="font-size: 14px; font-weight: bold"
+              id="docDueDate"></label>
+          </div>
+        </div>
+
+        <div class="row" style="background: #f0f2f5">
+          <div class="col-12 col-sm-3 col-md-2">
+            <label class="col-form-label" style="font-size: 13px">Dirección
+              Facturación</label>
+          </div>
+          <div class="col-12 col-sm pe-sm-0">
+            <select id="direcciones_facturacion" class="form-select"
+              style="font-size: 12px; border-color: rgb(159, 168, 175)">
+              <optgroup label="Direcciones de Facturación">
+                <option value>
+                  Seleccione una dirección de facturación
+                </option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="col-auto ps-0">
+            <!-- Start: Modal -->
+            <div>
+              <button class="btn btn-primary" type="button"
+                data-bs-toggle="modal" data-bs-target="#dirFactModal"
+                style="font-size: 12px">
+                ★
+              </button>
+              <div class="modal fade" role="dialog" tabindex="-1"
+                id="dirFactModal" aria-labelledby="dirFactModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content"
+                    style="width: 200%; position: absolute; left: 50%; transform: translateX(-50%);">
+                    {% include "sales_app/crear_dirfacturacion.html" %}
+                  </div>
+                </div>
+              </div>
+              <!-- End: Modal -->
+            </div>
+          </div>
+
+          <div class="col-auto text-end">
+            <label class="col-form-label"
+              style="font-size: 13px">Referencia</label>
+          </div>
+
+          <div class="col-12 col-sm">
+            <input class="form-control" type="text" id="referencia"
+              name="cliente"
+              style="font-size: 12px; border-color: rgb(159, 168, 175)" />
+          </div>
+        </div>
+        <div class="row" style="background: #f0f2f5">
+          <div class="col"
+            style="padding-top: 8px; font-size: 14px; font-weight: bold">
+            <div class="accordion" role="tablist" id="accordion-1">
+              <div class="accordion-item" style="
+                  background: rgb(240, 242, 245);
+                  border-color: rgb(159, 168, 175);
+                ">
+                <h2 class="accordion-header" role="tab">
+                  <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#accordion-1 .item-1" aria-expanded="false"
+                    aria-controls="accordion-1 .item-1" style="
+                      font-size: 14px;
+                      height: 40px;
+                      background: var(--bs-secondary-border-subtle);
+                      color: var(--bs-emphasis-color);
+                    " hidden>
+                    Mapa de relaciones
+                  </button>
+                </h2>
+                <div class="accordion-collapse collapse item-1" role="tabpanel"
+                  data-bs-parent="#accordion-1">
+                  <div class="accordion-body"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row" style="background: #f0f2f5">
+          <div class="col">
+            <p></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col" style="padding: 0px">
+            <div class="table-responsive">
+              {% csrf_token %} {{ pedidos_form.as_p }}
+              <table class="table" id="productos">
+                <thead>
+                  <tr style="
+                      color: var(--bs-table-striped-bg);
+                      background: var(--bs-body-color);
+                    ">
+                    <th style="
+                        font-size: 10px;
+                        width: 15%;
+                        background: var(--bs-table-striped-bg);
+                        color: var(--bs-table-bg);
+                      ">
+                      Código
+                    </th>
+                    <th style="
+                        font-size: 10px;
+                        width: 20%;
+                        background: var(--bs-table-striped-bg);
+                        color: var(--bs-table-bg);
+                      ">
+                      Bodega
+                    </th>
+                    <th style="
+                        font-size: 10px;
+                        width: 15%;
+                        background: var(--bs-table-striped-bg);
+                        color: var(--bs-table-bg);
+                      ">
+                      Precio
+                    </th>
+                    <th style="
+                        font-size: 10px;
+                        width: 10%;
+                        background: var(--bs-table-striped-bg);
+                        color: var(--bs-table-bg);
+                      ">
+                      Dcto
+                    </th>
+                    <th style="
+                        font-size: 10px;
+                        width: 15%;
+                        background: var(--bs-table-striped-bg);
+                        color: var(--bs-table-bg);
+                        text-align: center;
+                      ">
+                      Precio Dcto
+                    </th>
+                    <th style="
+                        font-size: 10px;
+                        width: 10%;
+                        background: var(--bs-table-striped-bg);
+                        color: var(--bs-table-bg);
+                      ">
+                      Cant
+                    </th>
+                    <th style="
+                        font-size: 10px;
+                        width: 15%;
+                        background: var(--bs-table-striped-bg);
+                        color: var(--bs-table-bg);
+                        text-align: center;
+                      ">
+                      Total
+                    </th>
+                  </tr>
+                </thead>
+                {% if DocumentLines %}
+                <!--<p>DocumentLines: {{ DocumentLines|default:"No data" }}</p>-->
+                {% include 'tabla_document_lines.html' %} {% endif %}
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="loadingOverlay" style="display: none">
+          <div class="spinner"></div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <p></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2 col-md-1" style="font-size: 12px">
+            <label class="col-form-label">Buscar:</label>
+          </div>
+          <div class="col-sm-7 col-md-7">
+            <input class="form-control" type="text" style="font-size: 12px"
+              id="inputNumero" />
+            <div id="resultados" style="font-size: 11px"></div>
+          </div>
+          <div class="col">
+            <button class="btn btn-primary" type="button"
+              style="font-size: 12px" id="agregar_productos" hidden>
+              Agregar
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p></p>
+          </div>
+        </div>
+        <div class="row" style="background: var(--bs-body-color)">
+          <div class="col">
+            <p></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p></p>
+          </div>
+        </div>
+        <div class="row g-3 align-items-start">
+          <div class="col-12 col-lg-7">
+            <textarea id="Observaciones-1" class="form-control"
+              placeholder="Observaciones" style="height: 96px;"></textarea>
+          </div>
+          <div class="col-12 col-lg-5">
+            <div class="row">
+              <div class="col-sm-7 text-end">
+                <small><b>Total Neto:</b></small>
+              </div>
+              <div class="col" style="text-align: right" data-total-neto
+                id="total_neto">
+                <small>0</small>
+              </div>
+              <div class="col-sm-7 text-end">
+                <small><b>IVA:</b></small>
+              </div>
+              <div class="col" style="text-align: right" id="iva">
+                <small>0</small>
+              </div>
+              <div class="col-sm-7 text-end">
+                <small><b>Total Bruto Sin Dcto:</b></small>
+              </div>
+              <div class="col" style="text-align: right" data-total-bruto
+                id="total_bruto">
+                <small>0</small>
+              </div>
+
+              <div class="col-sm-7 text-end">
+                <small><b>Total Bruto Con Dcto:</b></small>
+              </div>
+              <div class="col" style="text-align: right" data-total-descuento
+                id="total_descuento">
+                <small><b>0</b></small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p></p>
+          </div>
+        </div>
+        <div class="row" style="background: var(--bs-body-color)">
+          <div class="col">
+            <p></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p></p>
+          </div>
+        </div>
+        <div class="row py-2">
+          <div class="col d-flex justify-content-center align-items-center gap-2">
+            <button id="saveButton" class="btn btn-primary" type="button">
+              Guardar
+            </button>
+            <div class="dropdown">
+              <button id="botonacciones" class="btn btn-primary dropdown-toggle"
+                aria-expanded="false"
+                data-bs-toggle="dropdown" type="button"
+                hidden>
+                Copiar&nbsp;
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#" id="copiar-ODV-1" hidden>Orden
+                  de Venta</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p></p>
+          </div>
+          <div id="cotizacionContainer"></div>
+        </div>
+      </form>
+    </div>
+    <!-- Overlay de carga -->
+    <div id="loadingOverlay" style="display: none">
+      <div class="spinner"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="{% static 'app_sales/js/productos.js' %}"></script>
+    <script src="{% static 'app_sales/js/ajax_solicitudes.js' %}"></script>
+    <script src="{% static 'app_sales/js/productosInteraccion.js' %}"></script>
+
+
+
+
+    {% comment %}     <script src="{% static 'app_sales/js/loader.js' %}"></script>
+    <script src="{% static 'app_sales/js/interfazUsuario.js' %}"></script>
+    <script src="{% static 'app_sales/js/obtenerInfoCliente.js' %}"></script>
+    <script src="{% static 'app_sales/js/gestorDirecciones.js' %}"></script>
+    <script src="{% static 'app_sales/js/gestorContacto.js' %}"></script>
+    <script src="{% static 'app_sales/js/actualizacio_creacion_sn.js' %}"></script>
+    <script src="{% static 'app_sales/js/ajax_clientes.js' %}"></script>
+    <script src="{% static 'app_sales/js/interactividadUsuario.js' %}"></script>
+    <script src="{% static 'app_sales/js/productos.js' %}"></script>
+    <script src="{% static 'app_sales/js/borrar_etiquetas.js' %}"></script>
+    <script src="{% static 'app_sales/js/cargarInfoClientes.js' %}"></script>
+    <script src="{% static 'app_sales/js/CargaCotizacion.js' %}"></script>
+    <script src="{% static 'app_sales/js/interaccionModalContactos.js' %}"></script>
+    <script src="{% static 'app_sales/js/interaccionModalDirecciones.js' %}"></script>
+    <script src="{% static 'app_sales/js/search_data_document.js' %}"></script>
+    <script src="{% static 'app_sales/js/pdf_empresa.js' %}"></script>
+    <script src="{% static 'app_sales/js/duplicar_document.js' %}"></script>
+    <script src="{% static 'app_sales/js/coupons.js' %}"></script>
+    <script src="{% static 'app_sales/js/listas_precios.js' %}"></script>
+    <script src="{% static 'app_sales/js/fichaTecnica.js' %}"></script> {% endcomment %}
+    <script   src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+
+</html>
