@@ -4,8 +4,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.db.models import Q
 
+from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 import math
 
+from adapters.odoo.factory import get_odoo_client
+from adapters.odoo.service.odoo_service_connection import OdooConnectionService
 from infrastructure.models.config_discount_db import DiscountConfig
 from infrastructure.models.products_db import Product
 from infrastructure.models.seller_db import Seller
@@ -115,6 +122,16 @@ def my_account(request):
 
 def list_of_users(request):
     return HttpResponse()
+
+
+class OdooHealthView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        service = OdooConnectionService(get_odoo_client())
+        result = service.ping()
+        http_status = status.HTTP_200_OK if result.get("ok") else status.HTTP_502_BAD_GATEWAY
+        return Response(result, status=http_status)
 
 
 def search_products(request):
