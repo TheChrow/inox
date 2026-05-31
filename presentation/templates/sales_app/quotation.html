@@ -76,7 +76,7 @@
     {% include "barra.html" %}
     <!-- End: Navbar Right Links -->
     <div id="contenedor" class="container">
-      <div class="row g-2 align-items-center flex-wrap" style="color: var(--bs-secondary-color)">
+      <div class="row g-2 align-items-center flex-wrap inox-toolbar" style="color: var(--bs-secondary-color)">
         <div class="col-12 col-sm">
           <input type="search" placeholder="Buscar Número Cotización"
             id="search_quotate" style="width: 100%" />
@@ -103,7 +103,7 @@
               Acciones&nbsp;
             </button>
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="#" id="saveButton2">Guardar</a>
+              <a class="dropdown-item" href="#" id="saveButton2" hidden>Guardar</a>
               <a class="dropdown-item" href="#" id="duplicar-1">Duplicar</a>
               <a class="dropdown-item" href="#" id="copiar-ODV">Copiar a Orden
                 de Venta</a>
@@ -141,7 +141,7 @@
               padding-top: 0px;
               color: var(--bs-body-bg);
             ">
-            Nº
+            Numero Odoo:
           </p>
         </div>
         <div class="col" style="text-align: left; padding-top: 12px">
@@ -178,12 +178,6 @@
             "></p>
         </div>
       </div>
-      <div class="row" style="background: #f0f2f5">
-        <div class="col">
-          <p></p>
-        </div>
-      </div>
-
       <div class="row data-store" style="background: #f0f2f5">
         <div class="col-sm-5">
           <p>
@@ -207,8 +201,9 @@
       </div>
       <form id="forCrearPedidos" method="POST"
         action="{% url 'generate_quote' %}">
-        <div class="row" style="background: #f0f2f5">
-          <div class="col-12 col-lg-8">
+        <div class="row inox-form-grid">
+          <!-- ════════ COLUMNA IZQUIERDA ════════ -->
+          <div class="col-12 col-lg-6 inox-form-col">
             <div class="row g-2 align-items-center">
               <div class="col-12 col-sm-3">
                 <label class="col-form-label"
@@ -507,31 +502,52 @@
                 <!-- End: Modal -->
               </div>
             </div>
-          </div>
 
-          <div class="col-12 col-lg-3 col-xl-2">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" id="formCheck-7"
-                name="tipoDocTributario" value="BOLE"
-                style="border-color: rgb(159, 168, 175)" checked /><label
-                class="form-check-label"
-                for="formCheck-7">Boleta</label>
+            <!-- Documento: Factura / Boleta -->
+            <div class="row g-2 align-items-center mt-1">
+              <div class="col-12 col-sm-3">
+                <label class="col-form-label"
+                  style="font-size: 13px">Documento</label>
+              </div>
+              <div class="col-12 col-sm d-flex align-items-center gap-4">
+                <div class="form-check m-0">
+                  <input class="form-check-input" type="radio" id="formCheck-8"
+                    name="tipoDocTributario" value="FACT"
+                    style="border-color: rgb(159, 168, 175)" /><label
+                    class="form-check-label"
+                    for="formCheck-8">Factura</label>
+                </div>
+                <div class="form-check m-0">
+                  <input class="form-check-input" type="radio" id="formCheck-7"
+                    name="tipoDocTributario" value="BOLE"
+                    style="border-color: rgb(159, 168, 175)" checked /><label
+                    class="form-check-label"
+                    for="formCheck-7">Boleta</label>
+                </div>
+              </div>
             </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" id="formCheck-8"
-                name="tipoDocTributario" value="FACT"
-                style="border-color: rgb(159, 168, 175)" /><label
-                class="form-check-label"
-                for="formCheck-8">Factura</label>
-            </div>
-          </div>
-        </div>
 
-        <div class="row" style="background: #f0f2f5">
-          <div class="col-12 col-sm-3 col-md-2">
-            <label class="col-form-label" style="font-size: 13px">Tipo
-              Entrega</label>
-          </div>
+            <!-- Referencia -->
+            <div class="row g-2 align-items-center mt-1">
+              <div class="col-12 col-sm-3">
+                <label class="col-form-label"
+                  style="font-size: 13px">Referencia</label>
+              </div>
+              <div class="col-12 col-sm">
+                <input class="form-control" type="text" id="referencia"
+                  name="cliente"
+                  style="font-size: 12px; border-color: rgb(159, 168, 175)" />
+              </div>
+            </div>
+          </div><!-- ════════ /COLUMNA IZQUIERDA ════════ -->
+
+          <!-- ════════ COLUMNA DERECHA ════════ -->
+          <div class="col-12 col-lg-6 inox-form-col">
+            <div class="row" style="background: #f0f2f5">
+              <div class="col-12 col-sm-3 col-md-2">
+                <label class="col-form-label" style="font-size: 13px">Tipo
+                  Entrega</label>
+              </div>
           <div class="col-12 col-sm-7 col-md-5">
             <select class="form-select" id="tipoEntrega-1"
               style="font-size: 12px; border-color: rgb(159, 168, 175)">
@@ -633,18 +649,11 @@
             </div>
           </div>
 
-          <div class="col-auto text-end">
-            <label class="col-form-label"
-              style="font-size: 13px">Referencia</label>
-          </div>
-
-          <div class="col-12 col-sm">
-            <input class="form-control" type="text" id="referencia"
-              name="cliente"
-              style="font-size: 12px; border-color: rgb(159, 168, 175)" />
-          </div>
         </div>
-        <div class="row" style="background: #f0f2f5">
+          </div><!-- ════════ /COLUMNA DERECHA ════════ -->
+        </div><!-- ════════ /GRID 2 COLUMNAS ════════ -->
+
+        <div class="row" style="">
           <div class="col"
             style="padding-top: 8px; font-size: 14px; font-weight: bold">
             <div class="accordion" role="tablist" id="accordion-1">
@@ -855,7 +864,7 @@
           </div>
         </div>
         <div class="row py-2">
-          <div class="col d-flex justify-content-center align-items-center gap-2">
+          <div class="col d-flex justify-content-end align-items-center gap-2">
             <button id="saveButton" class="btn btn-primary" type="button">
               Guardar
             </button>

@@ -57,7 +57,7 @@ body {
 
 /* ── CONTENEDOR PRINCIPAL ──────────────────────── */
 #contenedor.container {
-  padding-top:    1.5rem;
+  padding-top:    .5rem;
   padding-bottom: 3rem;
   padding-left:   1.5rem;
   padding-right:  1.5rem;
@@ -168,10 +168,10 @@ body {
 #contenedor > .row:has(.tipoDocumento) {
   background:    linear-gradient(135deg, #e32467, #733565) !important;
   border-radius: var(--radius-card) !important;
-  padding:       .8rem 1.25rem !important;
+  padding:       .4rem 1.25rem !important;
   margin-left:   0 !important;
   margin-right:  0 !important;
-  margin-bottom: .5rem !important;
+  margin-bottom: .25rem !important;
 }
 
 /* Todos los textos dentro de ese row */
@@ -203,10 +203,10 @@ body {
 .row[style*="background:var(--bs-body-color)"] {
   background:    linear-gradient(135deg, #e32467, #733565) !important;
   border-radius: var(--radius-card) !important;
-  padding:       .8rem 1.25rem !important;
+  padding:       .4rem 1.25rem !important;
   margin-left:   0 !important;
   margin-right:  0 !important;
-  margin-bottom: .5rem !important;
+  margin-bottom: .25rem !important;
 }
 .row[style*="background: var(--bs-body-color)"] p,
 .row[style*="background:var(--bs-body-color)"] p,
@@ -637,10 +637,10 @@ body {
 .inox-status-bar {
   background:    linear-gradient(135deg, #e32467, #733565) !important;
   border-radius: var(--radius-card) !important;
-  padding:       .8rem 1.25rem !important;
+  padding:       .4rem 1.25rem !important;
   margin-left:   0 !important;
   margin-right:  0 !important;
-  margin-bottom: .5rem !important;
+  margin-bottom: .25rem !important;
 }
 .inox-status-bar p,
 .inox-status-bar label,
@@ -659,7 +659,42 @@ body {
   border-radius: var(--radius-card);
   box-shadow:    var(--shadow-card);
   padding:       .75rem 1.25rem;
-  margin-bottom: .75rem;
+  margin-bottom: .25rem;
+}
+
+/* ════════════════════════════════════════════════
+   LAYOUT 2 COLUMNAS  (redistribución según maqueta)
+   Izq: Cliente · Contacto · Documento · Referencia
+   Der: Tipo Entrega · Dir. Despacho · Dir. Facturación
+   ════════════════════════════════════════════════ */
+.inox-form-grid {
+  margin-left:  0 !important;
+  margin-right: 0 !important;
+}
+
+/* Cada columna del formulario */
+.inox-form-col {
+  padding-left:  0;
+  padding-right: 0;
+}
+
+/* Normaliza las filas internas de ambas columnas para que
+   los inputs queden alineados a ras y sin franjas de color */
+.inox-form-col .row {
+  margin-left:  0;
+  margin-right: 0;
+}
+.inox-form-col .row[style*="background: #f0f2f5"],
+.inox-form-col .row[style*="background:#f0f2f5"] {
+  background:    transparent !important;
+  padding-left:  0 !important;
+  padding-right: 0 !important;
+}
+
+/* Separación (canaleta) entre columnas en pantallas grandes */
+@media (min-width: 992px) {
+  .inox-form-col:first-of-type { padding-right: 2rem; }
+  .inox-form-col:last-of-type  { padding-left:  2rem; }
 }
 
 /* ════════════════════════════════════════════════
@@ -729,3 +764,41 @@ body {
     padding: 1rem;
   }
 }
+
+/* ════════════════════════════════════════════════
+   MARGIN-TOP INDEPENDIENTE  (ajuste por elemento)
+   Cada bloque controla su propio espacio superior,
+   sin depender de filas espaciadoras ni de selectores
+   posicionales. Valores graduales y fáciles de afinar.
+   ════════════════════════════════════════════════ */
+.inox-toolbar { margin-top: 0; }   /* el espacio bajo el navbar lo da #contenedor padding-top: 2rem */
+#saveButton   { margin-top: 1rem !important; }   /* botón Guardar */
+
+/* ════════════════════════════════════════════════
+   STATUS BAR COMPACTO  (alto reducido)
+   Centra el contenido y elimina el padding-top:12px
+   inline de las columnas; achica el input de cupón.
+   ════════════════════════════════════════════════ */
+.inox-status-bar { align-items: center; }
+.inox-status-bar .col {
+  padding-top:    0 !important;
+  padding-bottom: 0 !important;
+}
+.inox-status-bar .col-form-label {
+  padding-top:    0 !important;
+  padding-bottom: 0 !important;
+}
+.inox-status-bar .form-control,
+.inox-status-bar .btn {
+  padding-top:    .22rem !important;
+  padding-bottom: .22rem !important;
+}
+
+/* ════════════════════════════════════════════════
+   FONDO BLANCO en los campos del formulario
+   (el cupón #cupon_data conserva su fondo propio por
+   su !important sobre la barra rosada)
+   ════════════════════════════════════════════════ */
+.form-control     { background: #fff; }
+.form-select      { background-color: #fff; }
+#Observaciones-1  { background: #fff !important; }
