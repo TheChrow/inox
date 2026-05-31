@@ -24,13 +24,6 @@
       .subrayado-superior {
           text-decoration: overline;
       }
-      .inox-section-title {
-          background: var(--bs-body-color);
-          color: var(--bs-body-bg);
-          padding: 6px 12px;
-          font-size: 13px;
-          font-weight: bold;
-      }
     </style>
 
     <script>
@@ -379,58 +372,31 @@
                             <div class="col-sm-4"><input class="form-control" type="tel" id="contactoTelefono" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                           </div>
 
-                          <!-- ───── Sección Dirección de Despacho ───── -->
+                          <!-- ───── Sección Dirección (única, type=other) ───── -->
                           <div class="row mt-3">
-                            <div class="col-12 inox-section-title">Dirección de Despacho</div>
+                            <div class="col-12 inox-section-title">Dirección</div>
                           </div>
                           <div class="row" style="background: #f0f2f5">
                             <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Etiqueta</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="despNombre" placeholder="Ej: Bodega Maipú" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="dirNombre" placeholder="Ej: Casa Matriz" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                             <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Calle</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="despCalle" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="dirCalle" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                           </div>
                           <div class="row" style="background: #f0f2f5">
                             <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Número</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="despNumero" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="dirNumero" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                             <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Comuna</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="despComuna" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="dirComuna" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                           </div>
                           <div class="row" style="background: #f0f2f5">
                             <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Región</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="despRegion" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="dirRegion" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                             <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Cód. Postal</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="despZip" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="dirZip" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                           </div>
                           <div class="row" style="background: #f0f2f5">
                             <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Teléfono</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="tel" id="despTelefono" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
-                          </div>
-
-                          <!-- ───── Sección Dirección de Facturación ───── -->
-                          <div class="row mt-3">
-                            <div class="col-12 inox-section-title">Dirección de Facturación</div>
-                          </div>
-                          <div class="row" style="background: #f0f2f5">
-                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Etiqueta</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="factNombre" placeholder="Ej: Casa Matriz" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
-                            <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Calle</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="factCalle" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
-                          </div>
-                          <div class="row" style="background: #f0f2f5">
-                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Número</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="factNumero" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
-                            <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Comuna</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="factComuna" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
-                          </div>
-                          <div class="row" style="background: #f0f2f5">
-                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Región</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="factRegion" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
-                            <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Cód. Postal</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="text" id="factZip" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
-                          </div>
-                          <div class="row" style="background: #f0f2f5">
-                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Teléfono</label></div>
-                            <div class="col-sm-4"><input class="form-control" type="tel" id="factTelefono" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-4"><input class="form-control" type="tel" id="dirTelefono" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -640,10 +606,6 @@
           </div>
         </div>
 
-        <div id="loadingOverlay" style="display: none">
-          <div class="spinner"></div>
-        </div>
-
         <div class="row">
           <div class="col">
             <p></p>
@@ -767,6 +729,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="{% static 'app_sales/js/loading_overlay.js' %}"></script>
     <script src="{% static 'app_sales/js/productos.js' %}"></script>
     <script src="{% static 'app_sales/js/ajax_solicitudes.js' %}"></script>
     <script src="{% static 'app_sales/js/productosInteraccion.js' %}"></script>

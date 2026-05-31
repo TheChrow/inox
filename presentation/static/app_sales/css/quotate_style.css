@@ -611,6 +611,19 @@ body {
 }
 
 /* ════════════════════════════════════════════════
+   TÍTULOS DE SECCIÓN (modal cliente)
+   ════════════════════════════════════════════════ */
+.inox-section-title {
+  background:    rgba(227, 36, 103, .08);
+  color:         var(--pink);
+  padding:       8px 12px;
+  font-size:     13px;
+  font-weight:   600;
+  border-bottom: 2px solid var(--pink);
+  margin-top:    .25rem;
+}
+
+/* ════════════════════════════════════════════════
    MENSAJES / ALERTS
    ════════════════════════════════════════════════ */
 #contenedor-mensajes .alert,

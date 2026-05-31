@@ -22,6 +22,7 @@ $(document).ready(function () {
         const $btn = $(this);
         const originalText = $btn.text();
         $btn.prop('disabled', true).text('Grabando...');
+        showLoadingOverlay();
 
         $.ajax({
             url: '/sales/odoo/partners/',
@@ -55,6 +56,7 @@ $(document).ready(function () {
             },
             complete: function () {
                 $btn.prop('disabled', false).text(originalText);
+                hideLoadingOverlay();
             },
         });
     });
@@ -86,10 +88,8 @@ $(document).ready(function () {
         }
 
         const addresses = [];
-        const desp = buildAddress('desp', 'delivery');
-        if (desp) addresses.push(desp);
-        const fact = buildAddress('fact', 'invoice');
-        if (fact) addresses.push(fact);
+        const dir = buildAddress('dir', 'other');
+        if (dir) addresses.push(dir);
 
         return { customer, contacts, addresses };
     }
