@@ -357,91 +357,75 @@
                             </div>
                           </div>
 
-                          <div class="row" id="svgdircont">
-                            <div class="col" style="padding: 0px">
-                              <div>
-                                <ul class="nav nav-tabs" role="tablist">
-                                  <li class="nav-item" role="sales_app">
-                                    <a class="nav-link active" role="tab"
-                                      data-bs-toggle="tab"
-                                      href="#tab-1">Direcciones</a>
-                                  </li>
-                                  <li class="nav-item" role="sales_app">
-                                    <a class="nav-link" role="tab"
-                                      data-bs-toggle="tab"
-                                      href="#tab-2">Contactos</a>
-                                  </li>
-                                </ul>
+                          <!-- ───── Sección Contacto (visible sólo si Empresa) ───── -->
+                          <div class="row mt-3" id="seccionContacto" style="background: #f0f2f5">
+                            <div class="col-12"><h6 class="mt-2 mb-2" style="font-size: 14px;">Contacto principal</h6></div>
+                          </div>
+                          <div class="row" id="seccionContactoFila1" style="background: #f0f2f5">
+                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Nombre</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="contactoNombre" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Cargo</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="contactoCargo" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                          </div>
+                          <div class="row" id="seccionContactoFila2" style="background: #f0f2f5">
+                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Email</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="email" id="contactoEmail" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Teléfono</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="tel" id="contactoTelefono" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                          </div>
 
-                                <div class="tab-content">
-                                  <!--Agregar direccion-->
-                                  <div class="tab-pane active" role="tabpanel"
-                                    id="tab-1">
-                                    <div class="row" style="
-                                        margin-right: 0px;
-                                        margin-left: 0px;
-                                      ">
-                                      <div class="col-sm-12"
-                                        style="width: 100%">
-                                        <a
-                                          class="navbar-brand d-flex align-items-center"
-                                          style="width: 107px">
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="1em" height="1em"
-                                            fill="currentColor"
-                                            viewBox="0 0 16 16"
-                                            class="bi bi-building-fill-add"
-                                            style="font-size: 45px"
-                                            id="agregar_dir">
-                                            <path
-                                              d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0">
-                                            </path>
-                                            <path
-                                              d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7.256A4.493 4.493 0 0 0 12.5 8a4.493 4.493 0 0 0-3.59 1.787A.498.498 0 0 0 9 9.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .39-.187A4.476 4.476 0 0 0 8.027 12H6.5a.5.5 0 0 0-.5.5V16H3a1 1 0 0 1-1-1zm2 1.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5m3 0v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5m3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5M7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5M4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z">
-                                            </path>
-                                          </svg>
-                                        </a>
-                                      </div>
-                                    </div>
-                                    <div id="dir"></div>
-                                  </div>
+                          <!-- ───── Sección Dirección de Despacho ───── -->
+                          <div class="row mt-3" style="background: #f0f2f5">
+                            <div class="col-12"><h6 class="mt-2 mb-2" style="font-size: 14px;">Dirección de Despacho</h6></div>
+                          </div>
+                          <div class="row" style="background: #f0f2f5">
+                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Etiqueta</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="despNombre" placeholder="Ej: Bodega Maipú" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Calle</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="despCalle" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                          </div>
+                          <div class="row" style="background: #f0f2f5">
+                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Número</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="despNumero" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Comuna</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="despComuna" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                          </div>
+                          <div class="row" style="background: #f0f2f5">
+                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Región</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="despRegion" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Cód. Postal</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="despZip" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                          </div>
+                          <div class="row" style="background: #f0f2f5">
+                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Teléfono</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="tel" id="despTelefono" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                          </div>
 
-                                  <!--Agregar contacto-->
-                                  <div class="tab-pane" role="tabpanel"
-                                    id="tab-2">
-                                    <div class="row" style="
-                                        margin-right: 0px;
-                                        margin-left: 0px;
-                                      ">
-                                      <div class="col-sm-12"
-                                        style="width: 100%">
-                                        <a
-                                          class="navbar-brand d-flex align-items-center"
-                                          style="width: 107px">
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="1em" height="1em"
-                                            fill="currentColor"
-                                            viewBox="0 0 16 16"
-                                            class="bi bi-person-fill-add"
-                                            style="font-size: 45px"
-                                            id="agregar_cont">
-                                            <path
-                                              d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0">
-                                            </path>
-                                            <path
-                                              d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4">
-                                            </path>
-                                          </svg>
-                                        </a>
-                                      </div>
-                                    </div>
-                                    <div id="cont"></div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                          <!-- ───── Sección Dirección de Facturación ───── -->
+                          <div class="row mt-3" style="background: #f0f2f5">
+                            <div class="col-12"><h6 class="mt-2 mb-2" style="font-size: 14px;">Dirección de Facturación</h6></div>
+                          </div>
+                          <div class="row" style="background: #f0f2f5">
+                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Etiqueta</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="factNombre" placeholder="Ej: Casa Matriz" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Calle</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="factCalle" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                          </div>
+                          <div class="row" style="background: #f0f2f5">
+                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Número</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="factNumero" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Comuna</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="factComuna" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                          </div>
+                          <div class="row" style="background: #f0f2f5">
+                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Región</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="factRegion" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                            <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Cód. Postal</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="text" id="factZip" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
+                          </div>
+                          <div class="row" style="background: #f0f2f5">
+                            <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Teléfono</label></div>
+                            <div class="col-sm-4"><input class="form-control" type="tel" id="factTelefono" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -451,50 +435,10 @@
                             Cerrar
                           </button>
                           <button class="btn btn-primary" id="grabar-btn"
-                            type="submit">
+                            type="button">
                             Grabar
                           </button>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- End: Modal -->
-              </div>
-            </div>
-
-            <div class="row g-2 align-items-center">
-              <div class="col-12 col-sm-3">
-                <label class="col-form-label"
-                  style="font-size: 13px">Contacto</label>
-              </div>
-              <div class="col-12 col-sm pe-sm-0">
-                <select id="contactos_cliete" class="form-select"
-                  style="font-size: 12px; border-color: rgb(159, 168, 175)">
-                  <optgroup label="Contacto" id="clientes"
-                    value="Seleccione una dirección de despacho">
-                    <option value data-contact>
-                      Seleccione un contacto
-                    </option>
-                  </optgroup>
-                </select>
-              </div>
-
-              <!--Esta es la parte que trae contactos con el boton -->
-              <div class="col-auto ps-0">
-                <!-- Start: Modal -->
-                <div>
-                  <button class="btn btn-primary" type="button"
-                    data-bs-toggle="modal" data-bs-target="#contactoModal"
-                    style="font-size: 12px" id="botonmodalcontacto">
-                    ★</button><!-- Boton sua-->
-                  <div class="modal fade" role="dialog" tabindex="-1"
-                    id="contactoModal"
-                    aria-labelledby="contactoModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                      <div class="modal-content"
-                        style="width: 100%; position: absolute; left: 50%; transform: translateX(-50%);">
-                        {% include "sales_app/crear_contacto.html" %}
                       </div>
                     </div>
                   </div>
@@ -527,11 +471,43 @@
               </div>
             </div>
 
+          </div><!-- ════════ /COLUMNA IZQUIERDA ════════ -->
+
+          <!-- ════════ COLUMNA DERECHA ════════ -->
+          <div class="col-12 col-lg-6 inox-form-col">
+            <div class="row g-2 align-items-center" style="background: #f0f2f5">
+              <div class="col-12 col-sm-3">
+                <label class="col-form-label" style="font-size: 13px">Tipo Entrega</label>
+              </div>
+              <div class="col-12 col-sm">
+                <select class="form-select" id="tipoEntrega-1"
+                  style="font-size: 12px; border-color: rgb(159, 168, 175)">
+                  <optgroup label="Entrega">
+                    <option value="1" selected>Directa</option>
+                    <option value="5">Despacho</option>
+                    <option value="2">Retiro Panal</option>
+                    <option value="3">Retiro LC</option>
+                    <option value="4">Retiro PH</option>
+                    <option value="6">Retiro VI</option>
+                    <option value="7">Retiro GR</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="col-auto text-end">
+                <label class="col-form-label" style="font-size: 13px"
+                  id="docDate" hidden>Válido Hasta</label>
+              </div>
+              <div class="col-auto">
+                <label class="col-form-label"
+                  style="font-size: 14px; font-weight: bold"
+                  id="docDueDate"></label>
+              </div>
+            </div>
+
             <!-- Referencia -->
             <div class="row g-2 align-items-center mt-1">
               <div class="col-12 col-sm-3">
-                <label class="col-form-label"
-                  style="font-size: 13px">Referencia</label>
+                <label class="col-form-label" style="font-size: 13px">Referencia</label>
               </div>
               <div class="col-12 col-sm">
                 <input class="form-control" type="text" id="referencia"
@@ -539,117 +515,6 @@
                   style="font-size: 12px; border-color: rgb(159, 168, 175)" />
               </div>
             </div>
-          </div><!-- ════════ /COLUMNA IZQUIERDA ════════ -->
-
-          <!-- ════════ COLUMNA DERECHA ════════ -->
-          <div class="col-12 col-lg-6 inox-form-col">
-            <div class="row" style="background: #f0f2f5">
-              <div class="col-12 col-sm-3 col-md-2">
-                <label class="col-form-label" style="font-size: 13px">Tipo
-                  Entrega</label>
-              </div>
-          <div class="col-12 col-sm-7 col-md-5">
-            <select class="form-select" id="tipoEntrega-1"
-              style="font-size: 12px; border-color: rgb(159, 168, 175)">
-              <optgroup label="Entrega">
-                <option value="1" selected>Directa</option>
-                <option value="5">Despacho</option>
-                <option value="2">Retiro Panal</option>
-                <option value="3">Retiro LC</option>
-                <option value="4">Retiro PH</option>
-                <option value="6">Retiro VI</option>
-                <option value="7">Retiro GR</option>
-              </optgroup>
-            </select>
-          </div>
-        </div>
-
-        <div class="row" style="background: #f0f2f5">
-          <div class="col-12 col-sm-3 col-md-2">
-            <label class="col-form-label" style="font-size: 13px">Dirección
-              Despacho</label>
-          </div>
-          <div class="col-12 col-sm pe-sm-0">
-            <select id="direcciones_despacho" class="form-select"
-              style="font-size: 12px; border-color: rgb(159, 168, 175)">
-              <optgroup label="Direcciones de Despacho">
-                <option value>Seleccione una dirección de despacho</option>
-              </optgroup>
-            </select>
-          </div>
-
-          <div class="col-auto ps-0">
-            <!-- Start: Modal -->
-            <div>
-              <button class="btn btn-primary" type="button"
-                data-bs-toggle="modal" data-bs-target="#dirDespModal"
-                style="font-size: 12px">
-                ★
-              </button>
-              <div class="modal fade" role="dialog" tabindex="-1"
-                id="dirDespModal" aria-labelledby="dirDespModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content"
-                    style="width: 200%; position: absolute; left: 50%; transform: translateX(-50%);">
-                    {% include "sales_app/crear_dirdespacho.html" %}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- End: Modal -->
-          </div>
-
-          <div class="col-auto text-end">
-            <label class="col-form-label" style="font-size: 13px"
-              id="docDate" hidden>Válido Hasta</label>
-          </div>
-          <div class="col-auto">
-            <label class="col-form-label"
-              style="font-size: 14px; font-weight: bold"
-              id="docDueDate"></label>
-          </div>
-        </div>
-
-        <div class="row" style="background: #f0f2f5">
-          <div class="col-12 col-sm-3 col-md-2">
-            <label class="col-form-label" style="font-size: 13px">Dirección
-              Facturación</label>
-          </div>
-          <div class="col-12 col-sm pe-sm-0">
-            <select id="direcciones_facturacion" class="form-select"
-              style="font-size: 12px; border-color: rgb(159, 168, 175)">
-              <optgroup label="Direcciones de Facturación">
-                <option value>
-                  Seleccione una dirección de facturación
-                </option>
-              </optgroup>
-            </select>
-          </div>
-
-          <div class="col-auto ps-0">
-            <!-- Start: Modal -->
-            <div>
-              <button class="btn btn-primary" type="button"
-                data-bs-toggle="modal" data-bs-target="#dirFactModal"
-                style="font-size: 12px">
-                ★
-              </button>
-              <div class="modal fade" role="dialog" tabindex="-1"
-                id="dirFactModal" aria-labelledby="dirFactModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content"
-                    style="width: 200%; position: absolute; left: 50%; transform: translateX(-50%);">
-                    {% include "sales_app/crear_dirfacturacion.html" %}
-                  </div>
-                </div>
-              </div>
-              <!-- End: Modal -->
-            </div>
-          </div>
-
-        </div>
           </div><!-- ════════ /COLUMNA DERECHA ════════ -->
         </div><!-- ════════ /GRID 2 COLUMNAS ════════ -->
 
@@ -900,6 +765,7 @@
     <script src="{% static 'app_sales/js/productos.js' %}"></script>
     <script src="{% static 'app_sales/js/ajax_solicitudes.js' %}"></script>
     <script src="{% static 'app_sales/js/productosInteraccion.js' %}"></script>
+    <script src="{% static 'app_sales/js/crear_cliente.js' %}"></script>
 
 
 

@@ -18,6 +18,7 @@ class AddressSerializer(serializers.Serializer):
     zip = serializers.CharField(max_length=32, required=False, allow_blank=True)
     country_id = serializers.IntegerField(required=False)
     state_id = serializers.IntegerField(required=False)
+    region = serializers.CharField(max_length=128, required=False, allow_blank=True)
     phone = serializers.CharField(max_length=64, required=False, allow_blank=True)
 
 

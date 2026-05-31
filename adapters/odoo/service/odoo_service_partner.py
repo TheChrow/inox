@@ -81,6 +81,7 @@ class PartnerOdooService:
 
             for address in addresses:
                 values = {**_non_empty(address), "parent_id": customer_id}
+                values.pop("region", None)  # placeholder hasta que exista geo-service que resuelva a state_id
                 address_ids.append(self.create_partner(values))
         except Exception:
             cleanup = [*contact_ids, *address_ids]
