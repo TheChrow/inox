@@ -4,16 +4,24 @@ $(document).ready(function () {
         return $('input[name="grupoSN"]:checked').val() === '100';
     }
 
-    function toggleContactSection() {
-        const show = isEmpresa();
-        $('#seccionContacto, #seccionContactoFila1, #seccionContactoFila2').toggle(show);
+    // Toggle de visibilidad por tipo de cliente.
+    // Usamos d-none (no jQuery.toggle()) para no romper el display:flex de Bootstrap .row
+    function toggleByTipo() {
+        const empresa = isEmpresa();
+        $('#seccionContacto, #seccionContactoFila1, #seccionContactoFila2').toggleClass('d-none', !empresa);
+        $('#filaApellido').toggleClass('d-none', empresa);
+        $('#nombreLabel').text(empresa ? 'Razón Social' : 'Nombre');
     }
-    $('input[name="grupoSN"]').on('change', toggleContactSection);
-    toggleContactSection();
+    $('input[name="grupoSN"]').on('change', toggleByTipo);
+    toggleByTipo();
 
     $('#grabar-btn').on('click', function () {
         const payload = buildPayload();
         if (!validate(payload)) return;
+
+        const $btn = $(this);
+        const originalText = $btn.text();
+        $btn.prop('disabled', true).text('Grabando...');
 
         $.ajax({
             url: '/sales/odoo/partners/',
@@ -44,6 +52,9 @@ $(document).ready(function () {
                     msg = xhr.statusText || 'Error desconocido';
                 }
                 Swal.fire('Error', msg, 'error');
+            },
+            complete: function () {
+                $btn.prop('disabled', false).text(originalText);
             },
         });
     });
@@ -108,7 +119,7 @@ $(document).ready(function () {
         const errores = [];
 
         if (!($('#nombreSN').val() || '').trim()) {
-            errores.push('Nombre es obligatorio.');
+            errores.push(empresa ? 'Razón Social es obligatoria.' : 'Nombre es obligatorio.');
         }
         if (!empresa && !($('#apellidoSN').val() || '').trim()) {
             errores.push('Apellido es obligatorio para personas naturales.');

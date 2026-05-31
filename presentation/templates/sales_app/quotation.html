@@ -24,6 +24,13 @@
       .subrayado-superior {
           text-decoration: overline;
       }
+      .inox-section-title {
+          background: var(--bs-body-color);
+          color: var(--bs-body-bg);
+          padding: 6px 12px;
+          font-size: 13px;
+          font-weight: bold;
+      }
     </style>
 
     <script>
@@ -244,11 +251,11 @@
                             </div>
                           </div>
 
-                          <!-- Parte superior: Nombre y Apellido en una mitad, Radio buttons en la otra mitad -->
+                          <!-- Parte superior: Nombre/Razón Social + Apellido + Radio buttons -->
                           <div class="row" style="background: #f0f2f5">
-                            <!-- Columna izquierda: Nombre y Apellido -->
+                            <!-- Columna izquierda: Nombre/Razón Social y Apellido -->
                             <div class="col-sm-6">
-                              <div class="row">
+                              <div class="row" id="filaNombre">
                                 <div class="col-sm-4">
                                   <label id="nombreLabel" class="col-form-label"
                                     style="font-size: 13px">Nombre</label>
@@ -263,7 +270,7 @@
                                 </div>
                               </div>
 
-                              <div class="row mt-2">
+                              <div class="row mt-2" id="filaApellido">
                                 <div class="col-sm-4">
                                   <label class="col-form-label"
                                     style="font-size: 13px"
@@ -286,8 +293,7 @@
                                 <input class="form-check-input" type="radio"
                                   id="formCheck-5" name="grupoSN" value="105"
                                   style="border-color: rgb(159, 168, 175)"
-                                  checked
-                                  onchange="cambiarLabel('grupoSN', 'nombreLabel', 'apellidoSN', 'apellidorow')" />
+                                  checked />
                                 <label class="form-check-label"
                                   for="formCheck-5">Persona</label>
                               </div>
@@ -295,8 +301,7 @@
                               <div class="form-check">
                                 <input class="form-check-input" type="radio"
                                   id="formCheck-6" name="grupoSN" value="100"
-                                  style="border-color: rgb(159, 168, 175)"
-                                  onchange="cambiarLabel('grupoSN', 'nombreLabel', 'apellidoSN', 'apellidorow')" />
+                                  style="border-color: rgb(159, 168, 175)" />
                                 <label class="form-check-label"
                                   for="formCheck-6">Empresa</label>
                               </div>
@@ -358,16 +363,16 @@
                           </div>
 
                           <!-- ───── Sección Contacto (visible sólo si Empresa) ───── -->
-                          <div class="row mt-3" id="seccionContacto" style="background: #f0f2f5">
-                            <div class="col-12"><h6 class="mt-2 mb-2" style="font-size: 14px;">Contacto principal</h6></div>
+                          <div class="row mt-3 d-none" id="seccionContacto">
+                            <div class="col-12 inox-section-title">Contacto principal</div>
                           </div>
-                          <div class="row" id="seccionContactoFila1" style="background: #f0f2f5">
+                          <div class="row d-none" id="seccionContactoFila1" style="background: #f0f2f5">
                             <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Nombre</label></div>
                             <div class="col-sm-4"><input class="form-control" type="text" id="contactoNombre" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                             <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Cargo</label></div>
                             <div class="col-sm-4"><input class="form-control" type="text" id="contactoCargo" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                           </div>
-                          <div class="row" id="seccionContactoFila2" style="background: #f0f2f5">
+                          <div class="row d-none" id="seccionContactoFila2" style="background: #f0f2f5">
                             <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Email</label></div>
                             <div class="col-sm-4"><input class="form-control" type="email" id="contactoEmail" style="border-color: rgb(159, 168, 175); font-size: 12px;" /></div>
                             <div class="col-sm-2" style="text-align: right"><label class="col-form-label" style="font-size: 13px">Teléfono</label></div>
@@ -375,8 +380,8 @@
                           </div>
 
                           <!-- ───── Sección Dirección de Despacho ───── -->
-                          <div class="row mt-3" style="background: #f0f2f5">
-                            <div class="col-12"><h6 class="mt-2 mb-2" style="font-size: 14px;">Dirección de Despacho</h6></div>
+                          <div class="row mt-3">
+                            <div class="col-12 inox-section-title">Dirección de Despacho</div>
                           </div>
                           <div class="row" style="background: #f0f2f5">
                             <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Etiqueta</label></div>
@@ -402,8 +407,8 @@
                           </div>
 
                           <!-- ───── Sección Dirección de Facturación ───── -->
-                          <div class="row mt-3" style="background: #f0f2f5">
-                            <div class="col-12"><h6 class="mt-2 mb-2" style="font-size: 14px;">Dirección de Facturación</h6></div>
+                          <div class="row mt-3">
+                            <div class="col-12 inox-section-title">Dirección de Facturación</div>
                           </div>
                           <div class="row" style="background: #f0f2f5">
                             <div class="col-sm-2"><label class="col-form-label" style="font-size: 13px">Etiqueta</label></div>
