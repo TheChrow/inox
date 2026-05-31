@@ -15,7 +15,8 @@
     <link rel="stylesheet" href="{% static 'app_sales/css/quotate_style.css' %}" />
     <link rel="stylesheet"href="{% static 'app_sales/css/style3.css' %}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="{% static 'app_sales/js/quotations_insert.js' %}"></script>
+    {# quotations_insert.js: payload SAP antiguo, reemplazado por crear_cotizacion.js que apunta al endpoint Odoo #}
+    {# <script src="{% static 'app_sales/js/quotations_insert.js' %}"></script> #}
     <script src="{% static 'app_sales/js/sucursales_select.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -734,6 +735,7 @@
     <script src="{% static 'app_sales/js/ajax_solicitudes.js' %}"></script>
     <script src="{% static 'app_sales/js/productosInteraccion.js' %}"></script>
     <script src="{% static 'app_sales/js/crear_cliente.js' %}"></script>
+    <script src="{% static 'app_sales/js/crear_cotizacion.js' %}"></script>
 
 
 
