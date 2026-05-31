@@ -14,10 +14,12 @@ import math
 from adapters.odoo.factory import get_odoo_client
 from adapters.odoo.service.odoo_service_connection import OdooConnectionService
 from adapters.odoo.service.odoo_service_partner import PartnerOdooService
+from adapters.odoo.service.odoo_service_sales import SaleOdooService
 from infrastructure.models.config_discount_db import DiscountConfig
 from infrastructure.models.products_db import Product
 from infrastructure.models.seller_db import Seller
 from presentation.serializers.partner_serializers import CreatePartnerRequestSerializer
+from presentation.serializers.sale_serializers import CreateQuotationRequestSerializer
 
 
 # Create your views here.
@@ -159,6 +161,33 @@ class OdooPartnerCreateView(APIView):
 
         http_status = status.HTTP_200_OK if result["existing"] else status.HTTP_201_CREATED
         return Response({"ok": True, **result}, status=http_status)
+
+
+class OdooQuotationCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = CreateQuotationRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        validity_date = data.get("validity_date")
+
+        service = SaleOdooService(get_odoo_client())
+        try:
+            result = service.create_quotation(
+                partner_id=data["partner_id"],
+                lines=data["lines"],
+                validity_date=validity_date.isoformat() if validity_date else None,
+                client_order_ref=data.get("client_order_ref"),
+                note=data.get("note"),
+            )
+        except ValueError as exc:
+            return Response({"ok": False, "error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as exc:
+            return Response({"ok": False, "error": str(exc)}, status=status.HTTP_502_BAD_GATEWAY)
+
+        return Response({"ok": True, **result}, status=status.HTTP_201_CREATED)
 
 
 def search_products(request):
