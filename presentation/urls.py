@@ -20,5 +20,6 @@ urlpatterns = [
         path('guardar_contactos/', views.list_of_users, name='guardar_contactos_ajx'),
         path('search-products/', views.search_products, name='search_products'),
         path('odoo/health/', views.OdooHealthView.as_view(), name='odoo_health'),
+        path('odoo/partners/', views.OdooPartnerCreateView.as_view(), name='odoo_partner_create'),
 
 ]

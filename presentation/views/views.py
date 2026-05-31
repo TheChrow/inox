@@ -13,9 +13,11 @@ import math
 
 from adapters.odoo.factory import get_odoo_client
 from adapters.odoo.service.odoo_service_connection import OdooConnectionService
+from adapters.odoo.service.odoo_service_partner import PartnerOdooService
 from infrastructure.models.config_discount_db import DiscountConfig
 from infrastructure.models.products_db import Product
 from infrastructure.models.seller_db import Seller
+from presentation.serializers.partner_serializers import CreatePartnerRequestSerializer
 
 
 # Create your views here.
@@ -132,6 +134,31 @@ class OdooHealthView(APIView):
         result = service.ping()
         http_status = status.HTTP_200_OK if result.get("ok") else status.HTTP_502_BAD_GATEWAY
         return Response(result, status=http_status)
+
+
+class OdooPartnerCreateView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = CreatePartnerRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        service = PartnerOdooService(get_odoo_client())
+        try:
+            result = service.create_customer(
+                customer=data["customer"],
+                contacts=data.get("contacts"),
+                addresses=data.get("addresses"),
+            )
+        except Exception as exc:
+            return Response(
+                {"ok": False, "error": str(exc)},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        http_status = status.HTTP_200_OK if result["existing"] else status.HTTP_201_CREATED
+        return Response({"ok": True, **result}, status=http_status)
 
 
 def search_products(request):

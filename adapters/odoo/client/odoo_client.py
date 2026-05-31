@@ -64,6 +64,20 @@ class OdooAPIClient:
 
             return data
 
+        except requests.exceptions.HTTPError as exc:
+            body_text = ""
+            if exc.response is not None:
+                try:
+                    body_text = exc.response.text
+                except Exception:
+                    body_text = ""
+            logger.exception(f"Odoo API error: {url} - {payload} - body={body_text}")
+            raise requests.exceptions.HTTPError(
+                f"{exc} | odoo_body={body_text}",
+                response=exc.response,
+                request=exc.request,
+            ) from exc
+
         except requests.exceptions.RequestException:
             logger.exception(f"Odoo API error: {url} - {payload}")
             raise
