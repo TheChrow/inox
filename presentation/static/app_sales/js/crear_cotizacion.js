@@ -32,7 +32,11 @@ $(document).ready(function () {
                     'Cotización creada',
                     `Odoo: <b>${data.name || ''}</b> (id ${data.order_id})`,
                     'success'
-                );
+                ).then(() => {
+                    if (data && data.name) {
+                        window.location.href = `/sales/generate-quote/${encodeURIComponent(data.name)}/`;
+                    }
+                });
             },
             error: function (xhr) {
                 const body = xhr.responseJSON;
@@ -100,6 +104,10 @@ $(document).ready(function () {
 
         const note = ($('#Observaciones-1').val() || '').trim();
         if (note) payload.note = note;
+
+        // x_studio_vendedor: código del vendedor logueado
+        const codeVen = ($('#vendedor_data').attr('data-codeven') || '').trim();
+        if (codeVen) payload.salesperson_code = codeVen;
 
         return payload;
     }

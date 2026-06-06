@@ -65,7 +65,7 @@ def userLogout(request):
 
 
 @login_required
-def generate_quote(request):
+def generate_quote(request, odoo_name: str | None = None):
     username = request.user.username
 
     try:
@@ -84,6 +84,7 @@ def generate_quote(request):
 
     context = {
         'docnum': doc_num,
+        'odoo_name': odoo_name,
         'username': username,
         'regiones': regiones,
         'sucursal': sucurs,
@@ -296,6 +297,26 @@ class OdooQuotationListView(APIView):
         )
 
 
+class OdooQuotationReadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, odoo_name: str):
+        service = SaleOdooService(get_odoo_client())
+        try:
+            data = service.read_quotation_by_name(odoo_name)
+        except Exception as exc:
+            return Response(
+                {"ok": False, "error": str(exc)},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+        if not data:
+            return Response(
+                {"ok": False, "error": "Cotización no encontrada en Odoo"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response({"ok": True, **data}, status=status.HTTP_200_OK)
+
+
 class OdooQuotationCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -314,6 +335,7 @@ class OdooQuotationCreateView(APIView):
                 validity_date=validity_date.isoformat() if validity_date else None,
                 client_order_ref=data.get("client_order_ref"),
                 note=data.get("note"),
+                salesperson_code=(data.get("salesperson_code") or "").strip() or None,
             )
         except ValueError as exc:
             return Response({"ok": False, "error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)

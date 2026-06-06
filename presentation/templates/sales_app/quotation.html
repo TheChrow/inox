@@ -99,8 +99,9 @@
         <div class="col-auto ms-auto">
           <div class="dropdown">
             <button class="btn btn-primary dropdown-toggle"
+              id="btn-acciones-toolbar"
               aria-expanded="false" data-bs-toggle="dropdown" type="button"
-              style="font-size: 12px">
+              style="font-size: 12px" hidden>
               Acciones&nbsp;
             </button>
             <div class="dropdown-menu">
@@ -731,6 +732,11 @@
     <script src="{% static 'app_sales/js/productosInteraccion.js' %}"></script>
     <script src="{% static 'app_sales/js/crear_cliente.js' %}"></script>
     <script src="{% static 'app_sales/js/crear_cotizacion.js' %}"></script>
+    <script>
+      // Expone el nombre Odoo al cargador de cotizaciones (cargar_cotizacion.js).
+      window.INOX_ODOO_NAME = "{{ odoo_name|default:''|escapejs }}";
+    </script>
+    <script src="{% static 'app_sales/js/cargar_cotizacion.js' %}"></script>
 
 
 

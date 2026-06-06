@@ -36,6 +36,7 @@ class CreateQuotationRequestSerializer(serializers.Serializer):
     validity_date = serializers.DateField(required=False)
     client_order_ref = serializers.CharField(max_length=128, required=False, allow_blank=True)
     note = serializers.CharField(required=False, allow_blank=True)
+    salesperson_code = serializers.CharField(max_length=32, required=False, allow_blank=True)
 
     def validate_lines(self, value):
         if not value:

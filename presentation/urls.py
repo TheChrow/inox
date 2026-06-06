@@ -5,6 +5,7 @@ urlpatterns = [
         path('', views.home, name="home"),
         path('logout/', views.userLogout, name='logout'),
         path('generate-quote/', views.generate_quote, name='generate_quote'),
+        path('generate-quote/<str:odoo_name>/', views.generate_quote, name='generate_quote_by_odoo_name'),
         path('list-of-quotes/', views.list_of_quotes, name='list_of_quotes'),
         path('generate-sales-order/', views.generate_sales_order, name='generate_sales_order'),
         path('list-of-sales-orders/', views.list_of_sales_orders, name='list_of_sales_orders'),
@@ -25,5 +26,6 @@ urlpatterns = [
         path('odoo/partners/<int:customer_id>/', views.OdooPartnerReadView.as_view(), name='odoo_partner_read'),
         path('odoo/quotations/', views.OdooQuotationCreateView.as_view(), name='odoo_quotation_create'),
         path('odoo/quotations/list/', views.OdooQuotationListView.as_view(), name='odoo_quotation_list'),
+        path('odoo/quotations/<str:odoo_name>/', views.OdooQuotationReadView.as_view(), name='odoo_quotation_read'),
 
 ]

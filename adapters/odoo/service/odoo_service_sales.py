@@ -213,6 +213,80 @@ class SaleOdooService:
             {"ids": ids},
         )
 
+    def read_quotation_by_name(self, name: str) -> Optional[dict]:
+        """Lee una cotización Odoo a partir de su `name` (ej. 'S00004').
+
+        Devuelve un dict con:
+          - order: cabecera con id, name, state, partner_id, x_studio_vendedor,
+                   date_order, validity_date, client_order_ref, note, totales.
+          - lines: lista de líneas con product_id resuelto a default_code,
+                   nombre, precio de lista e imagen.
+        Devuelve None si no encuentra la cotización.
+        """
+        name = (name or "").strip()
+        if not name:
+            return None
+
+        order_fields = [
+            "id", "name", "state", "partner_id", "x_studio_vendedor",
+            "date_order", "validity_date", "client_order_ref", "note",
+            "amount_untaxed", "amount_total", "order_line",
+        ]
+        orders = self.client.post(
+            f"{self.base_path}/search_read",
+            {
+                "domain": [("name", "=", name)],
+                "fields": order_fields,
+                "limit": 1,
+            },
+        )
+        if not isinstance(orders, list) or not orders:
+            return None
+        order = orders[0]
+
+        line_ids = order.get("order_line") or []
+        lines: list = []
+        if line_ids:
+            line_fields = [
+                "id", "product_id", "name", "product_uom_qty",
+                "price_unit", "discount", "price_subtotal", "price_total",
+            ]
+            raw_lines = self.client.post(
+                f"{self.line_path}/read",
+                {"ids": line_ids, "fields": line_fields},
+            )
+            if isinstance(raw_lines, list):
+                lines = raw_lines
+
+        # Resolver product_id -> default_code, name, list_price, image
+        product_ids = sorted({
+            ln["product_id"][0]
+            for ln in lines
+            if isinstance(ln.get("product_id"), list) and ln["product_id"]
+        })
+        product_by_id: dict = {}
+        if product_ids:
+            product_rows = self.client.post(
+                f"{self.product_path}/read",
+                {
+                    "ids": product_ids,
+                    "fields": ["id", "default_code", "name", "list_price", "image_128"],
+                },
+            )
+            if isinstance(product_rows, list):
+                product_by_id = {p["id"]: p for p in product_rows}
+
+        for ln in lines:
+            pid_pair = ln.get("product_id")
+            product_id = pid_pair[0] if isinstance(pid_pair, list) and pid_pair else None
+            product = product_by_id.get(product_id) or {}
+            ln["product_default_code"] = product.get("default_code") or ""
+            ln["product_name"] = product.get("name") or (pid_pair[1] if isinstance(pid_pair, list) and len(pid_pair) > 1 else "")
+            ln["product_list_price"] = product.get("list_price") or 0
+            ln["product_image"] = product.get("image_128") or ""
+
+        return {"order": order, "lines": lines}
+
     def create_quotation(
         self,
         partner_id: int,
@@ -220,6 +294,7 @@ class SaleOdooService:
         validity_date: Optional[str] = None,
         client_order_ref: Optional[str] = None,
         note: Optional[str] = None,
+        salesperson_code: Optional[str] = None,
     ) -> dict:
         """
         Crea una sale.order en estado 'draft' (cotización) con sus líneas.
@@ -252,6 +327,8 @@ class SaleOdooService:
             order_vals["client_order_ref"] = client_order_ref
         if note:
             order_vals["note"] = note
+        if salesperson_code:
+            order_vals["x_studio_vendedor"] = salesperson_code
 
         # Intento 1: crear todo en una sola llamada con order_line embebidas
         embedded_vals = {

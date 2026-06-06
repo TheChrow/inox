@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             tr.innerHTML = `
                 <td class="lc-cell-folio">
-                    <a href="#" class="lc-link docentry-link" data-docentry="${record.id}">${folio}</a>
+                    <a href="#" class="lc-link docentry-link" data-odoo-name="${escapeHtml(record.name || '')}">${folio}</a>
                 </td>
                 <td class="lc-cell-customer">
                     <a href="#" class="lc-link cliente-link" data-partner-id="${partnerId ?? ""}">
@@ -202,10 +202,10 @@ document.addEventListener("DOMContentLoaded", function () {
         tbody.querySelectorAll(".docentry-link").forEach((link) => {
             link.addEventListener("click", (event) => {
                 event.preventDefault();
-                const docEntry = event.currentTarget.getAttribute("data-docentry");
-                if (!docEntry) return;
+                const odooName = event.currentTarget.getAttribute("data-odoo-name");
+                if (!odooName) return;
                 showLoading();
-                window.location.href = `/sales/generate-quote/?docentry=${docEntry}`;
+                window.location.href = `/sales/generate-quote/${encodeURIComponent(odooName)}/`;
             });
         });
 
