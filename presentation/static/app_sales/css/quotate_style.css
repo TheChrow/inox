@@ -193,10 +193,6 @@ body {
   letter-spacing: 2px !important;
   text-transform: uppercase !important;
 }
-#numero_cotizacion {
-  font-size:   1.2rem !important;
-  font-weight: 800 !important;
-}
 
 /* Fallback: mantener el selector original por si acaso */
 .row[style*="background: var(--bs-body-color)"],

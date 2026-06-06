@@ -9,7 +9,7 @@ function debounce(func, delay) {
 $(document).ready(function () {
     $('#inputNumero').on('input', debounce(function () {
         let numero = $(this).val();
-        let tipoDoucmento = $('.tipoDocumento').text().trim();
+        let tipoDoucmento = $('.tipoDocumento').first().text().trim();
         let cardCode = document.getElementById('inputCliente').getAttribute('data-codigosn');
         if (numero.length >= 3) {
             $.ajax({
