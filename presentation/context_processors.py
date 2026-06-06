@@ -1,10 +1,26 @@
 from django.contrib.auth.models import AnonymousUser
 
+from infrastructure.models.menu_module_db import MenuModule
+
+
 def user_groups(request):
     if isinstance(request.user, AnonymousUser):
         return {'user_groups': []}
     user_groups = list(request.user.groups.values_list('name', flat=True))
     return {'user_groups': user_groups}
+
+
+def menu_modules(request):
+    if isinstance(request.user, AnonymousUser):
+        return {'menu_modules': MenuModule.objects.none()}
+
+    modules = (
+        MenuModule.objects
+        .filter(is_active=True, groups__in=request.user.groups.all())
+        .distinct()
+        .order_by('order', 'label')
+    )
+    return {'menu_modules': modules}
 
 def current_user(request):
     if isinstance(request.user, AnonymousUser):
