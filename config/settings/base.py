@@ -62,6 +62,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 "presentation.context_processors.user_groups",
                 "presentation.context_processors.menu_modules",
+                "presentation.context_processors.nav_items",
             ],
         },
     },

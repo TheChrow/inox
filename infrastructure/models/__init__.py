@@ -6,6 +6,7 @@ from infrastructure.models.delivery_type_db import DeliveryType
 from infrastructure.models.documents_db import Document
 from infrastructure.models.group_bp_db import GroupBP
 from infrastructure.models.menu_module_db import MenuModule
+from infrastructure.models.nav_item_db import NavItem
 from infrastructure.models.payment_terms_db import PaymentTerms
 from infrastructure.models.price_list_db import PriceList
 from infrastructure.models.seller_type_db import SellerType
