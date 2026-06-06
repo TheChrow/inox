@@ -258,7 +258,7 @@ class SaleOdooService:
             if isinstance(raw_lines, list):
                 lines = raw_lines
 
-        # Resolver product_id -> default_code, name, list_price, image
+        # Resolver product_id -> default_code, name, list_price desde Odoo
         product_ids = sorted({
             ln["product_id"][0]
             for ln in lines
@@ -270,20 +270,36 @@ class SaleOdooService:
                 f"{self.product_path}/read",
                 {
                     "ids": product_ids,
-                    "fields": ["id", "default_code", "name", "list_price", "image_128"],
+                    "fields": ["id", "default_code", "name", "list_price"],
                 },
             )
             if isinstance(product_rows, list):
                 product_by_id = {p["id"]: p for p in product_rows}
 
+        # Imagen: tomar `image_url` desde el modelo Product local por SKU,
+        # no desde Odoo (image_128).
+        from infrastructure.models.products_db import Product
+        codes = {
+            (product_by_id.get(pid) or {}).get("default_code")
+            for pid in product_ids
+        }
+        codes.discard(None)
+        codes.discard("")
+        image_by_code: dict = {}
+        if codes:
+            image_by_code = dict(
+                Product.objects.filter(code__in=codes).values_list("code", "image_url")
+            )
+
         for ln in lines:
             pid_pair = ln.get("product_id")
             product_id = pid_pair[0] if isinstance(pid_pair, list) and pid_pair else None
             product = product_by_id.get(product_id) or {}
-            ln["product_default_code"] = product.get("default_code") or ""
+            default_code = product.get("default_code") or ""
+            ln["product_default_code"] = default_code
             ln["product_name"] = product.get("name") or (pid_pair[1] if isinstance(pid_pair, list) and len(pid_pair) > 1 else "")
             ln["product_list_price"] = product.get("list_price") or 0
-            ln["product_image"] = product.get("image_128") or ""
+            ln["product_image"] = image_by_code.get(default_code, "")
 
         return {"order": order, "lines": lines}
 

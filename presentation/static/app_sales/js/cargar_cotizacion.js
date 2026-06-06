@@ -102,9 +102,7 @@ $(document).ready(function () {
         lines.forEach((ln, idx) => {
             const sku = ln.product_default_code || '';
             const nombre = ln.product_name || '';
-            const imagen = ln.product_image
-                ? `data:image/png;base64,${ln.product_image}`
-                : '';
+            const imagen = ln.product_image || '';
             const precioVenta = Number(ln.price_unit) || 0;
             const precioLista = Number(ln.product_list_price) || precioVenta;
             const descuentoAplicado = Number(ln.discount) || 0;
