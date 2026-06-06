@@ -6,7 +6,6 @@ class ContactSerializer(serializers.Serializer):
     function = serializers.CharField(max_length=128, required=False, allow_blank=True)
     email = serializers.EmailField(required=False, allow_blank=True)
     phone = serializers.CharField(max_length=64, required=False, allow_blank=True)
-    mobile = serializers.CharField(max_length=64, required=False, allow_blank=True)
 
 
 class AddressSerializer(serializers.Serializer):
@@ -28,7 +27,6 @@ class CustomerSerializer(serializers.Serializer):
     vat = serializers.CharField(max_length=32, required=False, allow_blank=True)
     email = serializers.EmailField(required=False, allow_blank=True)
     phone = serializers.CharField(max_length=64, required=False, allow_blank=True)
-    mobile = serializers.CharField(max_length=64, required=False, allow_blank=True)
     website = serializers.URLField(required=False, allow_blank=True)
     comment = serializers.CharField(required=False, allow_blank=True)
     country_id = serializers.IntegerField(required=False)

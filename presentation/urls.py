@@ -21,6 +21,9 @@ urlpatterns = [
         path('search-products/', views.search_products, name='search_products'),
         path('odoo/health/', views.OdooHealthView.as_view(), name='odoo_health'),
         path('odoo/partners/', views.OdooPartnerCreateView.as_view(), name='odoo_partner_create'),
+        path('odoo/partners/search/', views.OdooPartnerSearchView.as_view(), name='odoo_partner_search'),
+        path('odoo/partners/<int:customer_id>/', views.OdooPartnerReadView.as_view(), name='odoo_partner_read'),
         path('odoo/quotations/', views.OdooQuotationCreateView.as_view(), name='odoo_quotation_create'),
+        path('odoo/quotations/list/', views.OdooQuotationListView.as_view(), name='odoo_quotation_list'),
 
 ]

@@ -15,6 +15,144 @@ $(document).ready(function () {
     $('input[name="grupoSN"]').on('change', toggleByTipo);
     toggleByTipo();
 
+    // ─── Autocompletar en #inputCliente ───────────────────────────────────────
+    const $inputCliente = $('#inputCliente');
+    const $sugerencias = $('#resultadosClientes');
+
+    let searchTimer = null;
+    $inputCliente.on('input', function () {
+        const q = ($(this).val() || '').trim();
+        clearTimeout(searchTimer);
+        if (q.length < 2) {
+            $sugerencias.empty();
+            return;
+        }
+        searchTimer = setTimeout(function () { buscarClientes(q); }, 250);
+    });
+
+    // Cierra sugerencias al hacer click fuera
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#inputCliente, #resultadosClientes').length) {
+            $sugerencias.empty();
+        }
+    });
+
+    function buscarClientes(query) {
+        $.ajax({
+            url: '/sales/odoo/partners/search/',
+            method: 'GET',
+            data: { q: query, limit: 10 },
+            headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') },
+        })
+            .done(function (resp) {
+                renderSugerencias(resp.records || []);
+            })
+            .fail(function () {
+                $sugerencias.empty();
+            });
+    }
+
+    function renderSugerencias(records) {
+        $sugerencias.empty();
+        if (!records.length) return;
+        const $list = $('<div class="list-group" style="position:absolute; z-index:1050; width:auto; max-width:480px; box-shadow:0 4px 12px rgba(0,0,0,.15);"></div>');
+        records.forEach(function (r) {
+            const subtitulo = [r.vat, r.email].filter(Boolean).join(' · ');
+            const $item = $(
+                '<button type="button" class="list-group-item list-group-item-action" style="font-size:12px;">' +
+                '<strong></strong><br><span class="text-muted" style="font-size:11px;"></span>' +
+                '</button>'
+            );
+            $item.find('strong').text(r.name || '(sin nombre)');
+            $item.find('span').text(subtitulo);
+            $item.on('click', function () {
+                cargarCliente(r.id);
+                $sugerencias.empty();
+            });
+            $list.append($item);
+        });
+        $sugerencias.append($list);
+    }
+
+    // ─── Cargar cliente y poblar el modal ─────────────────────────────────────
+    function cargarCliente(customerId) {
+        showLoadingOverlay();
+        $.ajax({
+            url: '/sales/odoo/partners/' + customerId + '/',
+            method: 'GET',
+            headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') },
+        })
+            .done(function (resp) {
+                rellenarModal(resp.customer, resp.contact, resp.address);
+                $inputCliente
+                    .val(buildDisplay(resp.customer))
+                    .attr('data-codigosn', resp.customer.id)
+                    .attr('data-rut', resp.customer.vat || '');
+            })
+            .fail(function (xhr) {
+                const body = xhr.responseJSON;
+                Swal.fire('Error', (body && body.error) || 'No se pudo cargar el cliente', 'error');
+            })
+            .always(function () { hideLoadingOverlay(); });
+    }
+
+    function buildDisplay(customer) {
+        return (customer.name || '') + (customer.vat ? ' - ' + customer.vat : '');
+    }
+
+    function rellenarModal(customer, contact, address) {
+        const empresa = !!customer.is_company;
+        $('input[name="grupoSN"]').filter('[value="' + (empresa ? '100' : '105') + '"]').prop('checked', true);
+        toggleByTipo();
+
+        if (empresa) {
+            $('#nombreSN').val(customer.name || '');
+            $('#apellidoSN').val('');
+        } else {
+            // Para personas naturales partimos por el primer espacio: name=primer token, last_name=resto.
+            const partes = (customer.name || '').trim().split(/\s+/);
+            const primer = partes.shift() || '';
+            $('#nombreSN').val(primer);
+            $('#apellidoSN').val(partes.join(' '));
+        }
+        $('#rutSN').val(customer.vat || '');
+        $('#telefonoSN').val(customer.phone || '+56');
+        $('#emailSN').val(customer.email || '');
+        $('#giroSN').val(customer.comment || '');
+
+        // Contacto: solo si es empresa y existe
+        if (empresa && contact) {
+            $('#contactoNombre').val(contact.name || '');
+            $('#contactoCargo').val(contact.function || '');
+            $('#contactoEmail').val(contact.email || '');
+            $('#contactoTelefono').val(contact.phone || '');
+        } else {
+            $('#contactoNombre, #contactoCargo, #contactoEmail, #contactoTelefono').val('');
+        }
+
+        // Dirección: usamos street completo en dirCalle, dirNumero queda vacío
+        // para no parsear incorrectamente. El usuario puede editar si necesita.
+        if (address) {
+            $('#dirNombre').val(address.name || '');
+            $('#dirCalle').val(address.street || '');
+            $('#dirNumero').val('');
+            $('#dirComuna').val(address.city || '');
+            $('#dirZip').val(address.zip || '');
+            $('#dirTelefono').val(address.phone || '');
+            // state_id viene como [id, nombre] desde Odoo
+            const region = Array.isArray(address.state_id) ? address.state_id[1] : '';
+            $('#dirRegion').val(region || '');
+        } else {
+            $('#dirNombre, #dirCalle, #dirNumero, #dirComuna, #dirZip, #dirTelefono, #dirRegion').val('');
+        }
+
+        // Abrir el modal automáticamente
+        const modalEl = document.getElementById('clienteModal');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    }
+
+    // ─── Grabar (crea/actualiza en Odoo + DB inox) ─────────────────────────────
     $('#grabar-btn').on('click', function () {
         const payload = buildPayload();
         if (!validate(payload)) return;
@@ -32,13 +170,16 @@ $(document).ready(function () {
             data: JSON.stringify(payload),
             success: function (data) {
                 const verbo = data.existing ? 'actualizado' : 'creado';
-                Swal.fire('Éxito', `Cliente ${verbo} (id ${data.customer_id})`, 'success');
+                const aviso = data.db_persisted === false
+                    ? `Cliente ${verbo} en Odoo (id ${data.customer_id}), pero no se pudo guardar en la base local: ${data.db_error || 'error desconocido'}.`
+                    : `Cliente ${verbo} (id ${data.customer_id})`;
+                const icon = data.db_persisted === false ? 'warning' : 'success';
+                Swal.fire(data.db_persisted === false ? 'Atención' : 'Éxito', aviso, icon);
 
                 bootstrap.Modal.getInstance(document.getElementById('clienteModal')).hide();
 
-                const display = `${payload.customer.name}${payload.customer.vat ? ' - ' + payload.customer.vat : ''}`;
-                $('#inputCliente')
-                    .val(display)
+                $inputCliente
+                    .val(`${payload.customer.name}${payload.customer.vat ? ' - ' + payload.customer.vat : ''}`)
                     .attr('data-codigosn', data.customer_id)
                     .attr('data-rut', payload.customer.vat || '');
             },

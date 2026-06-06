@@ -17,6 +17,137 @@ class SaleOdooService:
             {"domain": domain, "fields": fields},
         )
 
+    def search_read_paginated(
+        self,
+        domain: list,
+        fields: list,
+        limit: int,
+        offset: int,
+        order: str = "date_order desc, id desc",
+    ) -> list:
+        return self.client.post(
+            f"{self.base_path}/search_read",
+            {
+                "domain": domain,
+                "fields": fields,
+                "limit": limit,
+                "offset": offset,
+                "order": order,
+            },
+        )
+
+    def search_count(self, domain: list) -> int:
+        result = self.client.post(
+            f"{self.base_path}/search_count",
+            {"domain": domain},
+        )
+        if isinstance(result, int):
+            return result
+        if isinstance(result, list) and result and isinstance(result[0], int):
+            return result[0]
+        return 0
+
+    def list_quotations(
+        self,
+        *,
+        limit: int,
+        offset: int,
+        date_from: Optional[str] = None,
+        date_to: Optional[str] = None,
+        date_doc: Optional[str] = None,
+        doc_num: Optional[str] = None,
+        partner_text: Optional[str] = None,
+        salesperson_id: Optional[int] = None,
+        salesperson_name: Optional[str] = None,
+        state: Optional[str] = None,
+        amount_total: Optional[float] = None,
+    ) -> dict:
+        domain = self._build_quotations_domain(
+            date_from=date_from,
+            date_to=date_to,
+            date_doc=date_doc,
+            doc_num=doc_num,
+            partner_text=partner_text,
+            salesperson_id=salesperson_id,
+            salesperson_name=salesperson_name,
+            state=state,
+            amount_total=amount_total,
+        )
+
+        fields = [
+            "id",
+            "name",
+            "partner_id",
+            "user_id",
+            "x_studio_vendedor",
+            "date_order",
+            "state",
+            "amount_untaxed",
+            "amount_total",
+        ]
+
+        total = self.search_count(domain)
+        records = self.search_read_paginated(
+            domain=domain,
+            fields=fields,
+            limit=limit,
+            offset=offset,
+        )
+
+        return {"total": total, "records": records}
+
+    @staticmethod
+    def _build_quotations_domain(
+        *,
+        date_from: Optional[str],
+        date_to: Optional[str],
+        date_doc: Optional[str],
+        doc_num: Optional[str],
+        partner_text: Optional[str],
+        salesperson_id: Optional[int],
+        salesperson_name: Optional[str],
+        state: Optional[str],
+        amount_total: Optional[float],
+    ) -> list:
+        domain: list = []
+
+        if date_doc:
+            domain.append(("date_order", ">=", f"{date_doc} 00:00:00"))
+            domain.append(("date_order", "<=", f"{date_doc} 23:59:59"))
+        else:
+            if date_from:
+                domain.append(("date_order", ">=", f"{date_from} 00:00:00"))
+            if date_to:
+                domain.append(("date_order", "<=", f"{date_to} 23:59:59"))
+
+        if doc_num:
+            domain.append(("name", "ilike", doc_num))
+
+        if partner_text:
+            domain.append(("partner_id.name", "ilike", partner_text))
+
+        if salesperson_id:
+            domain.append(("x_studio_vendedor", "=", salesperson_id))
+        elif salesperson_name:
+            domain.append(("x_studio_vendedor", "ilike", salesperson_name))
+
+        if state:
+            domain.extend(SaleOdooService._state_clauses(state))
+
+        if amount_total is not None:
+            domain.append(("amount_total", "=", amount_total))
+
+        return domain
+
+    @staticmethod
+    def _state_clauses(state_code: str) -> list:
+        mapping = {
+            "O": [("state", "in", ["draft", "sent"])],
+            "C": [("state", "in", ["sale", "done"])],
+            "Y": [("state", "=", "cancel")],
+        }
+        return mapping.get(state_code, [])
+
     def read(self, ids: list, fields: list) -> list:
         return self.client.post(
             f"{self.base_path}/read",

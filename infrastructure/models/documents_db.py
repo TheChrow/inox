@@ -1,6 +1,6 @@
 from django.db import models
 
-from infrastructure.models.business_partner_db import BusinessPartner
+from infrastructure.models.customer_db import Customer
 from infrastructure.models.delivery_type_db import DeliveryType
 from infrastructure.models.payment_terms_db import PaymentTerms
 from infrastructure.models.sale_type_db import SaleType
@@ -38,7 +38,7 @@ class Document(models.Model):
     delivery_type = models.ForeignKey(DeliveryType, on_delete=models.CASCADE)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
     payment_terms = models.ForeignKey(PaymentTerms, on_delete=models.CASCADE)
-    business_partner = models.ForeignKey(BusinessPartner, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
 
     class Meta:
 

@@ -15,11 +15,15 @@ from adapters.odoo.factory import get_odoo_client
 from adapters.odoo.service.odoo_service_connection import OdooConnectionService
 from adapters.odoo.service.odoo_service_partner import PartnerOdooService
 from adapters.odoo.service.odoo_service_sales import SaleOdooService
+from domain.customer_service import CustomerService
 from infrastructure.models.config_discount_db import DiscountConfig
 from infrastructure.models.products_db import Product
 from infrastructure.models.seller_db import Seller
 from presentation.serializers.partner_serializers import CreatePartnerRequestSerializer
-from presentation.serializers.sale_serializers import CreateQuotationRequestSerializer
+from presentation.serializers.sale_serializers import (
+    CreateQuotationRequestSerializer,
+    ListQuotationsRequestSerializer,
+)
 
 
 # Create your views here.
@@ -89,8 +93,29 @@ def generate_quote(request):
 
     return render(request, 'quotation.html', context)
     
+@login_required
 def list_of_quotes(request):
-    return HttpResponse()
+    username = request.user.username
+    name_user = request.user.first_name
+
+    try:
+        seller = Seller.objects.get(auth_user=request.user)
+    except Seller.DoesNotExist:
+        return JsonResponse(
+            {'error': 'No se encontró el vendedor relacionado con el usuario autenticado'},
+            status=404,
+        )
+
+    user_groups = list(request.user.groups.values_list('name', flat=True))
+
+    context = {
+        'username': username,
+        'nameUser': name_user,
+        'codigoVendedor': seller.code,
+        'nombreVendedor': seller.auth_user.get_full_name() or username,
+        'user_groups': user_groups,
+    }
+    return render(request, 'lista_cotizaciones.html', context)
 
 def generate_sales_order(request):
     return HttpResponse()
@@ -144,9 +169,9 @@ class OdooPartnerCreateView(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        service = PartnerOdooService(get_odoo_client())
+        service = CustomerService(PartnerOdooService(get_odoo_client()))
         try:
-            result = service.create_customer(
+            result = service.create_or_update(
                 customer=data["customer"],
                 contacts=data.get("contacts"),
                 addresses=data.get("addresses"),
@@ -159,6 +184,116 @@ class OdooPartnerCreateView(APIView):
 
         http_status = status.HTTP_200_OK if result["existing"] else status.HTTP_201_CREATED
         return Response({"ok": True, **result}, status=http_status)
+
+
+class OdooPartnerSearchView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        query = (request.query_params.get("q") or "").strip()
+        if len(query) < 2:
+            return Response({"ok": True, "records": []}, status=status.HTTP_200_OK)
+
+        try:
+            limit = int(request.query_params.get("limit") or 10)
+        except (TypeError, ValueError):
+            limit = 10
+        limit = max(1, min(limit, 25))
+
+        service = PartnerOdooService(get_odoo_client())
+        try:
+            records = service.search_customers(query, limit=limit)
+        except Exception as exc:
+            return Response(
+                {"ok": False, "error": str(exc)},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+        return Response({"ok": True, "records": records}, status=status.HTTP_200_OK)
+
+
+class OdooPartnerReadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, customer_id: int):
+        service = PartnerOdooService(get_odoo_client())
+        try:
+            data = service.read_customer_full(customer_id)
+        except Exception as exc:
+            return Response(
+                {"ok": False, "error": str(exc)},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+        if not data:
+            return Response(
+                {"ok": False, "error": "Cliente no encontrado en Odoo"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Solo el primer contacto y la primera dirección si existen.
+        first_contact = (data.get("contacts") or [None])[0]
+        first_address = (data.get("addresses") or [None])[0]
+        return Response(
+            {
+                "ok": True,
+                "customer": data["customer"],
+                "contact": first_contact,
+                "address": first_address,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class OdooQuotationListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ListQuotationsRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        page = data.get("page", 1)
+        page_size = data.get("page_size", 20)
+        offset = (page - 1) * page_size
+
+        date_from = data.get("date_from")
+        date_to = data.get("date_to")
+        date_doc = data.get("date_doc")
+
+        service = SaleOdooService(get_odoo_client())
+        try:
+            result = service.list_quotations(
+                limit=page_size,
+                offset=offset,
+                date_from=date_from.isoformat() if date_from else None,
+                date_to=date_to.isoformat() if date_to else None,
+                date_doc=date_doc.isoformat() if date_doc else None,
+                doc_num=(data.get("doc_num") or "").strip() or None,
+                partner_text=(data.get("partner_text") or "").strip() or None,
+                salesperson_id=data.get("salesperson_id"),
+                salesperson_name=(data.get("salesperson_name") or "").strip() or None,
+                state=(data.get("state") or "").strip() or None,
+                amount_total=data.get("amount_total"),
+            )
+        except Exception as exc:
+            return Response(
+                {"ok": False, "error": str(exc)},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        total = result["total"]
+        total_pages = math.ceil(total / page_size) if page_size else 1
+
+        return Response(
+            {
+                "ok": True,
+                "page": page,
+                "page_size": page_size,
+                "total": total,
+                "total_pages": total_pages,
+                "records": result["records"],
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class OdooQuotationCreateView(APIView):

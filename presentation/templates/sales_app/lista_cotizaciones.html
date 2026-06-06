@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>Inox · Cotizaciones</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'app_sales/img/inox_icon.ico' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'app_sales/css/lista_cotizaciones.css' %}">
+</head>
+
+<body>
+
+  {% include "barra.html" %}
+
+  <main class="lc-page">
+
+    <header class="lc-header">
+      <div>
+        <h1 class="lc-title">Cotizaciones</h1>
+        <p class="lc-subtitle">Listado de cotizaciones registradas en Odoo</p>
+      </div>
+      <a class="lc-btn-primary" href="{% url 'generate_quote' %}">
+        <i class="bi bi-plus-lg"></i> Nueva Cotización
+      </a>
+    </header>
+
+    <form id="filterForm" class="lc-toolbar" autocomplete="off">
+
+      <div class="lc-search">
+        <i class="bi bi-search lc-search-icon" id="lupa-busqueda"></i>
+        <input type="search" id="buscarlistacootizacion"
+               class="lc-input lc-input--search"
+               placeholder="Buscar por folio, cliente, fecha o estado…">
+      </div>
+
+      <div class="lc-date-range">
+        <label class="lc-field">
+          <span class="lc-label">Desde</span>
+          <input class="lc-input" id="fecha_inicio" name="fecha_inicio" type="date">
+        </label>
+        <label class="lc-field">
+          <span class="lc-label">Hasta</span>
+          <input class="lc-input" id="fecha_fin" name="fecha_fin" type="date">
+        </label>
+      </div>
+
+      <div class="lc-meta">
+        <span id="lc-summary" class="lc-summary">—</span>
+      </div>
+
+      <div class="lc-table-wrap">
+        <table class="lc-table">
+          <thead>
+            <tr>
+              <th>
+                <span class="lc-th-label">Folio</span>
+                <input class="lc-input lc-input--col" type="search" id="buscar_num_sap"
+                       name="docNum" placeholder="Folio">
+              </th>
+              <th>
+                <span class="lc-th-label">Cliente</span>
+                <input class="lc-input lc-input--col" type="search" id="buscar_cliente"
+                       name="cardName" placeholder="Nombre del cliente">
+              </th>
+              <th>
+                <span class="lc-th-label">Vendedor</span>
+                <select class="lc-input lc-input--col" id="filtro_vendedor" name="salesEmployeeCode">
+                  {% if 'Seller' in user_groups or 'Admin' in user_groups %}
+                    {% if codigoVendedor %}
+                      <option value="{{ codigoVendedor }}" selected>Míos</option>
+                    {% endif %}
+                  {% endif %}
+                  {% if 'Admin' in user_groups %}
+                    <option value="">Todos</option>
+                  {% endif %}
+                  {% if not user_groups %}
+                    <option value="" selected>Todos</option>
+                  {% endif %}
+                </select>
+              </th>
+              <th>
+                <span class="lc-th-label">Fecha</span>
+                <input class="lc-input lc-input--col" id="fecha_doc" name="fecha_documento" type="date">
+              </th>
+              <th>
+                <span class="lc-th-label">Estado</span>
+                <select class="lc-input lc-input--col" id="filtro_estado" name="DocumentStatus">
+                  <option value="" selected>Todos</option>
+                  <option value="O">Abierto</option>
+                  <option value="C">Cerrado</option>
+                  <option value="Y">Cancelado</option>
+                </select>
+              </th>
+              <th class="lc-th-right">
+                <span class="lc-th-label">Neto</span>
+                <input class="lc-input lc-input--col lc-input--readonly" type="search"
+                       id="buscar_neto" name="docNeto" readonly disabled>
+              </th>
+              <th class="lc-th-right">
+                <span class="lc-th-label">Bruto</span>
+                <input class="lc-input lc-input--col" type="search" id="buscar_bruto"
+                       name="docTotal" placeholder="Total">
+              </th>
+            </tr>
+          </thead>
+          <tbody id="listadoCotizaciones"></tbody>
+        </table>
+
+        <div id="lc-empty" class="lc-empty" hidden>
+          <i class="bi bi-inboxes"></i>
+          <p>No se encontraron cotizaciones con los filtros aplicados.</p>
+        </div>
+      </div>
+
+      <nav class="lc-pagination-wrap" aria-label="Paginación de cotizaciones">
+        <ul class="pagination lc-pagination"></ul>
+      </nav>
+
+    </form>
+
+  </main>
+
+  <div id="loadingOverlay" class="lc-overlay" hidden>
+    <div class="lc-spinner"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'app_sales/js/lista_cotizaciones.js' %}"></script>
+</body>
+
+</html>
