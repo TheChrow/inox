@@ -330,6 +330,12 @@ body {
 }
 .form-control::placeholder { color: #c0a0b8; }
 
+/* Sin bordes internos en las filas de producto (td y tr) */
+.product-row td,
+.product-row tr {
+  border: none !important;
+}
+
 /* Input group */
 .input-group .form-control {
   border-right:  none !important;
