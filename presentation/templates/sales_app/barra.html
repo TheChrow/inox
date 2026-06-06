@@ -83,27 +83,11 @@
         background: rgba(227, 36, 103, .06);
     }
 
-    /* Estado activo: subrayado con gradiente, anclado al borde inferior de la barra */
+    /* Estado activo: mismo lenguaje que el hover, un poco más marcado */
     .inox-link.active {
-        background: transparent;
-    }
-
-    .inox-link.active::after {
-        content: '';
-        position: absolute;
-        left: 11px;
-        right: 11px;
-        bottom: -17px;
-        height: 3px;
-        background: var(--grad);
-        border-radius: 2px 2px 0 0;
-    }
-
-    /* En móvil, el subrayado se pega al link (la barra ya no es una sola línea) */
-    @media (max-width: 768px) {
-        .inox-link.active::after {
-            bottom: 0;
-        }
+        color: var(--pink) !important;
+        background: rgba(227, 36, 103, .12);
+        font-weight: 600;
     }
 
     /* ── DROPDOWN ───────────────────────── */
