@@ -60,36 +60,34 @@ def userLogout(request):
     return redirect('/')
 
 
+@login_required
 def generate_quote(request):
+    username = request.user.username
 
-    if request.user.is_authenticated:
-        username = request.user.username
+    try:
+        usuario = Seller.objects.get(auth_user=request.user)
+        sucurs = usuario.branch.name
+        nombreUser = usuario.auth_user.first_name
+        codVen = usuario.code
 
-        try:
-            usuario = Seller.objects.get(auth_user=request.user)
-            sucurs = usuario.branch.name  
-            nombreUser = usuario.auth_user.first_name
-            codVen = usuario.code
-            
-        except Seller.DoesNotExist:
-            return JsonResponse({'error': 'No se encontró el usuario relacionado con el usuario autenticado'}, status=404)
+    except Seller.DoesNotExist:
+        return JsonResponse({'error': 'No se encontró el usuario relacionado con el usuario autenticado'}, status=404)
 
-        doc_num = request.GET.get('docNum', None)
+    doc_num = request.GET.get('docNum', None)
 
-        #regiones = RegionDB.objects.all()
-        regiones = [{'id': 1, 'nombre': 'Región Metropolitana'},]
+    #regiones = RegionDB.objects.all()
+    regiones = [{'id': 1, 'nombre': 'Región Metropolitana'},]
 
-        context = {
-            'docnum': doc_num,
-            'username': username,
-            'regiones': regiones,
-            'sucursal': sucurs,
-            'nombreuser': nombreUser,
-            'codigoVendedor': codVen
-        }
+    context = {
+        'docnum': doc_num,
+        'username': username,
+        'regiones': regiones,
+        'sucursal': sucurs,
+        'nombreuser': nombreUser,
+        'codigoVendedor': codVen
+    }
 
-        # Renderiza el template con el contexto
-        return render(request, 'quotation.html', context)
+    return render(request, 'quotation.html', context)
     
 def list_of_quotes(request):
     return HttpResponse()

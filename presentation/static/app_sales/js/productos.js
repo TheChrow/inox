@@ -153,11 +153,7 @@ class Producto {
                         <div class="col-sm-12 col-lg-12 col-xl-11 col-xxl-10">
                           <select class="form-select bodega-select" style="font-size: 11px;">
                             <optgroup label="Bodega">
-                            <option value="LC" ${this.sucursal === 'LC' ? 'selected' : ''}>Las Condes (LC)</option>
-                            <option value="PH" ${this.sucursal === 'PH' ? 'selected' : ''}>Vitacura (PH)</option>
-                            <option value="ME" ${this.sucursal === 'ME' ? 'selected' : ''}>Panal (ME)</option>
-                            <option value="VI" ${this.sucursal === 'VI' ? 'selected' : ''}>Viña del Mar (VI)</option>
-                            <option value="GR" ${this.sucursal === 'GR' ? 'selected' : ''}>Ñuñoa (GR)</option>
+                            <option value="LO" selected>Los Olivos (LO)</option>
                             </optgroup>
                           </select>
                         </div>

@@ -105,13 +105,12 @@
             </button>
             <div class="dropdown-menu">
               <a class="dropdown-item" href="#" id="saveButton2" hidden>Guardar</a>
-              <a class="dropdown-item" href="#" id="duplicar-1">Duplicar</a>
-              <a class="dropdown-item" href="#" id="copiar-ODV">Copiar a Orden
+              <a class="dropdown-item" href="#" id="duplicar-1" hidden>Duplicar</a>
+              <a class="dropdown-item" href="#" id="copiar-ODV" hidden>Copiar a Orden
                 de Venta</a>
               <!-- <a class="dropdown-item" href="solic_devolucion.html">Copiar a Solicitud de Devolución</a> -->
-              <a class="dropdown-item" href="#" id="generarPDF">PDF Personas
-                (Bruto)</a>
-              <a class="dropdown-item" href="#" id="generar_pdf_empresa"><strong>PDF Empresas(Neto)</strong></a>
+              <a class="dropdown-item" href="#" id="generarPDF">Imprimir Cotización</a>
+              <a class="dropdown-item" href="#" id="generar_pdf_empresa" hidden><strong>PDF Empresas(Neto)</strong></a>
               <!-- <a class="dropdown-item" id="cerrar">Cerrar</a> -->
               <!--  <a class="dropdown-item" id="cancelar">Cancelar</a> -->
             </div>
@@ -152,14 +151,14 @@
               color: var(--bs-body-bg);
             "></p>
         </div>
-        <div class="col" style="text-align: right; padding-top: 12px">
+        <div class="col" style="text-align: right; padding-top: 12px" hidden>
           <label class="col-form-label"
-            style="font-size: 13px; color: var(--bs-body-bg);">Código</label>
+            style="font-size: 13px; color: var(--bs-body-bg);" hidden>Código</label>
           <!-- Estados -->
         </div>
         <div class="col" style="text-align: left; padding-top: 12px; padding-bottom: 0px">
           <!-- Estados -->
-          <div class="input-group" style="max-width: 300px;">
+          <div class="input-group" style="max-width: 300px;" hidden>
             <input
               class="form-control"
               type="text"
@@ -188,7 +187,7 @@
           </p>
      </div>
         <div class="col">
-          <p>Showroom:&nbsp;<strong id="sucursal">{{ sucursal }}</strong></p>
+          <p>SEDE:&nbsp;<strong id="sucursal">{{ sucursal }}</strong></p>
         </div>
         <div class="col">
           <p>
@@ -457,11 +456,7 @@
                   <optgroup label="Entrega">
                     <option value="1" selected>Directa</option>
                     <option value="5">Despacho</option>
-                    <option value="2">Retiro Panal</option>
-                    <option value="3">Retiro LC</option>
-                    <option value="4">Retiro PH</option>
-                    <option value="6">Retiro VI</option>
-                    <option value="7">Retiro GR</option>
+                    <option value="3">Retiro Los Olivos</option>
                   </optgroup>
                 </select>
               </div>
@@ -651,7 +646,7 @@
           <div class="col-12 col-lg-5">
             <div class="row">
               <div class="col-sm-7 text-end">
-                <small><b>Total Neto:</b></small>
+                <small><b>TOTAL N:</b></small>
               </div>
               <div class="col" style="text-align: right" data-total-neto
                 id="total_neto">
@@ -664,7 +659,7 @@
                 <small>0</small>
               </div>
               <div class="col-sm-7 text-end">
-                <small><b>Total Bruto Sin Dcto:</b></small>
+                <small><b>TOTAL B SN DCTO:</b></small>
               </div>
               <div class="col" style="text-align: right" data-total-bruto
                 id="total_bruto">
@@ -672,7 +667,7 @@
               </div>
 
               <div class="col-sm-7 text-end">
-                <small><b>Total Bruto Con Dcto:</b></small>
+                <small><b>TOTAL B CN DCTO:</b></small>
               </div>
               <div class="col" style="text-align: right" data-total-descuento
                 id="total_descuento">

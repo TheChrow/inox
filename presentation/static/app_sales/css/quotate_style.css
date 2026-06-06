@@ -312,21 +312,21 @@ body {
    ════════════════════════════════════════════════ */
 .form-control,
 .form-select {
-  font-family:   'Outfit', sans-serif;
-  font-size:     .83rem;
-  background:    var(--field-bg);
-  border:        1px solid var(--border) !important;
-  border-radius: var(--radius-field);
-  color:         var(--text-main);
-  padding:       6px 10px;
-  transition:    border-color .18s, box-shadow .18s, background .18s;
+  font-family:      'Outfit', sans-serif;
+  font-size:        .83rem;
+  background-color: var(--field-bg);
+  border:           1px solid var(--border) !important;
+  border-radius:    var(--radius-field);
+  color:            var(--text-main);
+  padding:          6px 10px;
+  transition:       border-color .18s, box-shadow .18s, background-color .18s;
 }
 .form-control:focus,
 .form-select:focus {
-  border-color: var(--pink) !important;
-  box-shadow:   0 0 0 3px rgba(227, 36, 103, .1);
-  background:   #fff;
-  outline:      none;
+  border-color:     var(--pink) !important;
+  box-shadow:       0 0 0 3px rgba(227, 36, 103, .1);
+  background-color: #fff;
+  outline:          none;
 }
 .form-control::placeholder { color: #c0a0b8; }
 
