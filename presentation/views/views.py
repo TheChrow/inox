@@ -15,6 +15,7 @@ from adapters.odoo.factory import get_odoo_client
 from adapters.odoo.service.odoo_service_connection import OdooConnectionService
 from adapters.odoo.service.odoo_service_partner import PartnerOdooService
 from adapters.odoo.service.odoo_service_sales import SaleOdooService
+from domain.cotizacion_pdf_service import CotizacionNotFoundError, CotizacionPDFService
 from domain.customer_service import CustomerService
 from infrastructure.models.config_discount_db import DiscountConfig
 from infrastructure.models.products_db import Product
@@ -388,6 +389,47 @@ class OdooQuotationCreateView(APIView):
             return Response({"ok": False, "error": str(exc)}, status=status.HTTP_502_BAD_GATEWAY)
 
         return Response({"ok": True, **result}, status=status.HTTP_201_CREATED)
+
+
+class OdooQuotationPDFView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, odoo_name: str):
+        client = get_odoo_client()
+        service = CotizacionPDFService(
+            sale_service=SaleOdooService(client),
+            partner_service=PartnerOdooService(client),
+        )
+        vendedor = _vendedor_para_pdf(request.user)
+        try:
+            pdf_bytes = service.generar_pdf(
+                odoo_name,
+                vendedor=vendedor,
+                base_url=request.build_absolute_uri("/"),
+            )
+        except CotizacionNotFoundError as exc:
+            return Response({"ok": False, "error": str(exc)}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as exc:
+            return Response({"ok": False, "error": str(exc)}, status=status.HTTP_502_BAD_GATEWAY)
+
+        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="cotizacion_{odoo_name}.pdf"'
+        return response
+
+
+def _vendedor_para_pdf(user) -> dict:
+    try:
+        seller = Seller.objects.select_related("auth_user", "branch").get(auth_user=user)
+    except Seller.DoesNotExist:
+        return {"nombre": user.get_full_name() or user.username, "email": user.email}
+    auth = seller.auth_user
+    return {
+        "nombre": (auth.get_full_name() or auth.username).strip(),
+        "email": auth.email or "",
+        "telefono": "",
+        "sucursal": seller.branch.name if seller.branch_id else "",
+        "codigo": seller.code,
+    }
 
 
 def search_products(request):

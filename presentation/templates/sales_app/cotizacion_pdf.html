@@ -1,0 +1,362 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cotización {{ cotizacion.numero }}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+    @page {
+      size: letter;
+      margin: 14mm 14mm 14mm 14mm;
+      @bottom-center {
+        content: "Luminox Chile · Cotización " counter(page) " / " counter(pages);
+        font-family: 'Outfit', Helvetica, Arial, sans-serif;
+        font-size: 8pt;
+        color: #9070a0;
+      }
+    }
+
+    :root {
+      --pink:       #e32467;
+      --purple:     #733565;
+      --text-main:  #2a1020;
+      --text-muted: #9070a0;
+      --border:     #ecdce6;
+      --field-bg:   #f9f4f7;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Outfit', Helvetica, Arial, sans-serif;
+      font-size: 9.5pt;
+      color: var(--text-main);
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    /* ── HEADER ─────────────────────────────────── */
+    .doc-header {
+      background: linear-gradient(135deg, #e32467 0%, #733565 100%);
+      color: #fff;
+      padding: 18px 22px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+    }
+    .doc-header table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .doc-header .brand {
+      font-size: 22pt;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+    .doc-header .brand small {
+      display: block;
+      font-size: 8pt;
+      font-weight: 400;
+      letter-spacing: 4px;
+      opacity: .85;
+      margin-top: 1px;
+    }
+    .doc-header .doc-type {
+      text-align: right;
+      vertical-align: top;
+    }
+    .doc-header .doc-type .label {
+      font-size: 8pt;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: .85;
+    }
+    .doc-header .doc-type .number {
+      font-size: 18pt;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .doc-header .doc-type .dates {
+      font-size: 8.5pt;
+      margin-top: 6px;
+      opacity: .95;
+    }
+    .doc-header .doc-type .dates strong { font-weight: 600; }
+
+    /* ── INFO CARDS ─────────────────────────────── */
+    .info-grid {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 10px 0;
+      margin-bottom: 14px;
+    }
+    .info-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 13px;
+      vertical-align: top;
+      width: 50%;
+    }
+    .info-card .card-title {
+      font-size: 7.5pt;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--pink);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .info-card .name {
+      font-size: 11pt;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+    .info-card .meta {
+      font-size: 8.5pt;
+      color: var(--text-muted);
+    }
+    .info-card .meta div { margin: 1px 0; }
+    .info-card .meta strong { color: var(--text-main); font-weight: 500; }
+
+    /* ── LÍNEAS ─────────────────────────────────── */
+    .lines {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+    }
+    .lines thead th {
+      background: var(--field-bg);
+      color: var(--purple);
+      font-size: 7.5pt;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+      text-align: left;
+      padding: 8px 8px;
+      border-bottom: 2px solid var(--pink);
+    }
+    .lines thead th.right { text-align: right; }
+    .lines thead th.center { text-align: center; }
+    .lines tbody tr {
+      border-bottom: 1px solid var(--border);
+    }
+    .lines tbody td {
+      padding: 8px;
+      vertical-align: top;
+    }
+    .lines td.idx { width: 18px; color: var(--text-muted); font-weight: 600; }
+    .lines td.img-cell { width: 42px; }
+    .lines td.img-cell img {
+      width: 38px; height: 38px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #fff;
+      border: 1px solid var(--border);
+    }
+    .lines td.sku { font-family: 'Outfit', monospace; font-size: 8.5pt; color: var(--purple); font-weight: 600; }
+    .lines td.desc .desc-name { font-weight: 500; }
+    .lines td.desc .desc-comment {
+      font-size: 8pt;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-style: italic;
+    }
+    .lines td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .lines td.center { text-align: center; }
+    .lines td.discount {
+      text-align: right;
+      color: var(--pink);
+      font-weight: 600;
+    }
+    .lines td.subtotal {
+      text-align: right;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ── TOTALES ────────────────────────────────── */
+    .totals-wrap {
+      margin-top: 18px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .totals-wrap .notes {
+      width: 60%;
+      vertical-align: top;
+      padding-right: 14px;
+    }
+    .totals-wrap .notes .notes-title {
+      font-size: 7.5pt;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--purple);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .totals-wrap .notes .notes-body {
+      font-size: 8.5pt;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .totals-card {
+      width: 40%;
+      vertical-align: top;
+      background: var(--field-bg);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .totals-card table { width: 100%; border-collapse: collapse; }
+    .totals-card td { padding: 4px 0; font-size: 9.5pt; }
+    .totals-card td.label { color: var(--text-muted); }
+    .totals-card td.value { text-align: right; font-variant-numeric: tabular-nums; }
+    .totals-card .discount-row td.value { color: var(--pink); }
+    .totals-card .grand-total td {
+      padding-top: 10px;
+      border-top: 2px solid var(--pink);
+      font-size: 12pt;
+      font-weight: 700;
+      color: var(--purple);
+    }
+    .totals-card .grand-total td.label { letter-spacing: 1.5px; text-transform: uppercase; font-size: 8pt; }
+
+    /* ── FOOTER NOTES ───────────────────────────── */
+    .legal {
+      margin-top: 22px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 7.5pt;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .legal strong { color: var(--purple); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="doc-header">
+    <table>
+      <tr>
+        <td class="brand">
+          LUMINOX
+          <small>CHILE · ILUMINACIÓN</small>
+        </td>
+        <td class="doc-type">
+          <div class="label">Cotización</div>
+          <div class="number">{{ cotizacion.numero }}</div>
+          <div class="dates">
+            <strong>Fecha:</strong> {{ cotizacion.fecha|default:"—" }}
+            {% if cotizacion.validez %}
+              · <strong>Válido hasta:</strong> {{ cotizacion.validez }}
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <table class="info-grid">
+    <tr>
+      <td class="info-card">
+        <div class="card-title">Cliente</div>
+        <div class="name">{{ cotizacion.cliente.nombre|default:"—" }}</div>
+        <div class="meta">
+          {% if cotizacion.cliente.rut %}<div><strong>RUT:</strong> {{ cotizacion.cliente.rut }}</div>{% endif %}
+          {% if cotizacion.cliente.giro %}<div><strong>Giro:</strong> {{ cotizacion.cliente.giro }}</div>{% endif %}
+          {% if cotizacion.cliente.direccion %}<div>{{ cotizacion.cliente.direccion }}{% if cotizacion.cliente.region %}, {{ cotizacion.cliente.region }}{% endif %}</div>{% endif %}
+          {% if cotizacion.cliente.telefono %}<div><strong>Tel.:</strong> {{ cotizacion.cliente.telefono }}</div>{% endif %}
+          {% if cotizacion.cliente.email %}<div><strong>Email:</strong> {{ cotizacion.cliente.email }}</div>{% endif %}
+          {% if cotizacion.cliente.contacto %}
+            <div style="margin-top:5px"><strong>Contacto:</strong> {{ cotizacion.cliente.contacto.nombre }}{% if cotizacion.cliente.contacto.cargo %} · {{ cotizacion.cliente.contacto.cargo }}{% endif %}</div>
+          {% endif %}
+        </div>
+      </td>
+      <td class="info-card">
+        <div class="card-title">Vendedor</div>
+        <div class="name">{{ cotizacion.vendedor.nombre|default:"—" }}</div>
+        <div class="meta">
+          {% if cotizacion.vendedor.sucursal %}<div><strong>Sucursal:</strong> {{ cotizacion.vendedor.sucursal }}</div>{% endif %}
+          {% if cotizacion.vendedor.email %}<div><strong>Email:</strong> {{ cotizacion.vendedor.email }}</div>{% endif %}
+          {% if cotizacion.vendedor.telefono %}<div><strong>Tel.:</strong> {{ cotizacion.vendedor.telefono }}</div>{% endif %}
+          {% if cotizacion.referencia %}<div style="margin-top:5px"><strong>Referencia:</strong> {{ cotizacion.referencia }}</div>{% endif %}
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <table class="lines">
+    <thead>
+      <tr>
+        <th>Nº</th>
+        <th colspan="2">Producto</th>
+        <th class="right">Precio</th>
+        <th class="center">Dscto.</th>
+        <th class="right">Precio c/dscto.</th>
+        <th class="center">Cant.</th>
+        <th class="right">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in cotizacion.productos %}
+      <tr>
+        <td class="idx">{{ p.indice }}</td>
+        <td class="img-cell">{% if p.imagen %}<img src="{{ p.imagen }}" alt="" />{% endif %}</td>
+        <td class="desc">
+          <div class="sku" style="font-size:8pt;color:var(--purple);font-weight:600">{{ p.sku }}</div>
+          <div class="desc-name">{{ p.descripcion }}</div>
+          {% if p.comentario and p.comentario != p.descripcion %}
+            <div class="desc-comment">{{ p.comentario }}</div>
+          {% endif %}
+        </td>
+        <td class="num">${{ p.precio_unitario|floatformat:0|intcomma }}</td>
+        <td class="discount">{% if p.descuento_pct %}{{ p.descuento_pct|floatformat:0 }}%{% else %}—{% endif %}</td>
+        <td class="num">${{ p.precio_con_descuento|floatformat:0|intcomma }}</td>
+        <td class="center">{{ p.cantidad|floatformat:"-2" }}</td>
+        <td class="subtotal">${{ p.subtotal|floatformat:0|intcomma }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="totals-wrap">
+    <tr>
+      <td class="notes">
+        {% if cotizacion.observaciones %}
+        <div class="notes-title">Observaciones</div>
+        <div class="notes-body">{{ cotizacion.observaciones|linebreaksbr }}</div>
+        {% endif %}
+      </td>
+      <td class="totals-card">
+        <table>
+          {% if cotizacion.totales.tiene_descuento %}
+          <tr class="discount-row">
+            <td class="label">Descuento aplicado</td>
+            <td class="value">−${{ cotizacion.totales.descuento|floatformat:0|intcomma }}</td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td class="label">Subtotal neto</td>
+            <td class="value">${{ cotizacion.totales.neto|floatformat:0|intcomma }}</td>
+          </tr>
+          <tr>
+            <td class="label">IVA 19%</td>
+            <td class="value">${{ cotizacion.totales.iva|floatformat:0|intcomma }}</td>
+          </tr>
+          <tr class="grand-total">
+            <td class="label">Total</td>
+            <td class="value">${{ cotizacion.totales.total|floatformat:0|intcomma }}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <div class="legal">
+    <strong>Validez de la cotización:</strong> esta cotización tiene una vigencia de 10 días corridos desde su emisión.
+    Los precios y stock están sujetos a disponibilidad al momento de confirmar la compra.
+    Luminox Chile no se hace responsable por daños derivados de instalaciones ejecutadas por personal externo.
+  </div>
+
+</body>
+</html>

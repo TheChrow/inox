@@ -133,7 +133,7 @@
               padding-top: 0px;
               color: var(--bs-body-bg);
             ">
-            Cotización
+            Documento de Venta
           </p>
         </div>
         <div class="col" style="text-align: right; padding-top: 12px">
@@ -737,6 +737,7 @@
       window.INOX_ODOO_NAME = "{{ odoo_name|default:''|escapejs }}";
     </script>
     <script src="{% static 'app_sales/js/cargar_cotizacion.js' %}"></script>
+    <script src="{% static 'app_sales/js/generar_pdf.js' %}"></script>
 
 
 

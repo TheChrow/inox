@@ -27,5 +27,6 @@ urlpatterns = [
         path('odoo/quotations/', views.OdooQuotationCreateView.as_view(), name='odoo_quotation_create'),
         path('odoo/quotations/list/', views.OdooQuotationListView.as_view(), name='odoo_quotation_list'),
         path('odoo/quotations/<str:odoo_name>/', views.OdooQuotationReadView.as_view(), name='odoo_quotation_read'),
+        path('odoo/quotations/<str:odoo_name>/pdf/', views.OdooQuotationPDFView.as_view(), name='odoo_quotation_pdf'),
 
 ]
