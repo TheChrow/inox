@@ -100,7 +100,12 @@ $(document).ready(function () {
         return (customer.name || '') + (customer.vat ? ' - ' + customer.vat : '');
     }
 
-    function rellenarModal(customer, contact) {
+    // Expuesta en window para que cargar_cotizacion.js pueda rellenar el modal
+    // del cliente sin necesidad de re-pedir los datos a Odoo.
+    window.inoxRellenarModalCliente = rellenarModal;
+
+    function rellenarModal(customer, contact, opts) {
+        const open = !opts || opts.open !== false;
         const empresa = !!customer.is_company;
         $('input[name="grupoSN"]').filter('[value="' + (empresa ? '100' : '105') + '"]').prop('checked', true);
         toggleByTipo();
@@ -141,10 +146,11 @@ $(document).ready(function () {
         const region = Array.isArray(customer.state_id) ? customer.state_id[1] : '';
         $('#dirRegion').val(region || '');
 
-        // Abrir el modal automáticamente
-        const modalEl = document.getElementById('clienteModal');
-        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-        modal.show();
+        if (open) {
+            const modalEl = document.getElementById('clienteModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
     }
 
     // ─── Grabar (crea/actualiza en Odoo + DB inox) ─────────────────────────────

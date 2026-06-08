@@ -80,7 +80,7 @@ $(document).ready(function () {
 
         if (!partnerId) return;
 
-        // Reusa el endpoint que ya levanta cliente + dirección + contacto.
+        // Reusa el endpoint que ya levanta cliente + contacto (con dirección en cabecera).
         $.ajax({
             url: '/sales/odoo/partners/' + partnerId + '/',
             method: 'GET',
@@ -93,6 +93,13 @@ $(document).ready(function () {
                 .val(display)
                 .attr('data-codigosn', customer.id || partnerId)
                 .attr('data-rut', customer.vat || '');
+
+            // Precarga el modal con los datos del cliente (sin abrirlo).
+            // Así, cuando el vendedor abre el modal desde el botón ★,
+            // ve los datos ya cargados en vez de un formulario vacío.
+            if (typeof window.inoxRellenarModalCliente === 'function') {
+                window.inoxRellenarModalCliente(customer, resp.contact, { open: false });
+            }
         });
     }
 
