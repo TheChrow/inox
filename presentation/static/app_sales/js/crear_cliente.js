@@ -83,7 +83,7 @@ $(document).ready(function () {
             headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') },
         })
             .done(function (resp) {
-                rellenarModal(resp.customer, resp.contact, resp.address);
+                rellenarModal(resp.customer, resp.contact);
                 $inputCliente
                     .val(buildDisplay(resp.customer))
                     .attr('data-codigosn', resp.customer.id)
@@ -100,7 +100,7 @@ $(document).ready(function () {
         return (customer.name || '') + (customer.vat ? ' - ' + customer.vat : '');
     }
 
-    function rellenarModal(customer, contact, address) {
+    function rellenarModal(customer, contact) {
         const empresa = !!customer.is_company;
         $('input[name="grupoSN"]').filter('[value="' + (empresa ? '100' : '105') + '"]').prop('checked', true);
         toggleByTipo();
@@ -130,21 +130,16 @@ $(document).ready(function () {
             $('#contactoNombre, #contactoCargo, #contactoEmail, #contactoTelefono').val('');
         }
 
-        // Dirección: usamos street completo en dirCalle, dirNumero queda vacío
-        // para no parsear incorrectamente. El usuario puede editar si necesita.
-        if (address) {
-            $('#dirNombre').val(address.name || '');
-            $('#dirCalle').val(address.street || '');
-            $('#dirNumero').val('');
-            $('#dirComuna').val(address.city || '');
-            $('#dirZip').val(address.zip || '');
-            $('#dirTelefono').val(address.phone || '');
-            // state_id viene como [id, nombre] desde Odoo
-            const region = Array.isArray(address.state_id) ? address.state_id[1] : '';
-            $('#dirRegion').val(region || '');
-        } else {
-            $('#dirNombre, #dirCalle, #dirNumero, #dirComuna, #dirZip, #dirTelefono, #dirRegion').val('');
-        }
+        // Dirección: viene en la cabecera del partner (street/city/zip/state_id).
+        // dirNumero queda vacío: street ya contiene calle+número concatenados.
+        $('#dirNombre').val('');
+        $('#dirCalle').val(customer.street || '');
+        $('#dirNumero').val('');
+        $('#dirComuna').val(customer.city || '');
+        $('#dirZip').val(customer.zip || '');
+        $('#dirTelefono').val('');
+        const region = Array.isArray(customer.state_id) ? customer.state_id[1] : '';
+        $('#dirRegion').val(region || '');
 
         // Abrir el modal automáticamente
         const modalEl = document.getElementById('clienteModal');
@@ -154,17 +149,24 @@ $(document).ready(function () {
 
     // ─── Grabar (crea/actualiza en Odoo + DB inox) ─────────────────────────────
     $('#grabar-btn').on('click', function () {
-        const payload = buildPayload();
-        if (!validate(payload)) return;
+        const existingId = parseInt($inputCliente.attr('data-codigosn'), 10) || null;
+        const isUpdate = !!existingId;
+
+        const payload = buildPayload({ isUpdate });
+        if (!validate(payload, { isUpdate })) return;
 
         const $btn = $(this);
         const originalText = $btn.text();
         $btn.prop('disabled', true).text('Grabando...');
         showLoadingOverlay();
 
+        const ajaxConfig = isUpdate
+            ? { url: `/sales/odoo/partners/${existingId}/`, method: 'PUT' }
+            : { url: '/sales/odoo/partners/', method: 'POST' };
+
         $.ajax({
-            url: '/sales/odoo/partners/',
-            method: 'POST',
+            url: ajaxConfig.url,
+            method: ajaxConfig.method,
             contentType: 'application/json',
             headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') },
             data: JSON.stringify(payload),
@@ -179,7 +181,7 @@ $(document).ready(function () {
                 bootstrap.Modal.getInstance(document.getElementById('clienteModal')).hide();
 
                 $inputCliente
-                    .val(`${payload.customer.name}${payload.customer.vat ? ' - ' + payload.customer.vat : ''}`)
+                    .val(`${payload.customer.name || ''}${payload.customer.vat ? ' - ' + payload.customer.vat : ''}`)
                     .attr('data-codigosn', data.customer_id)
                     .attr('data-rut', payload.customer.vat || '');
             },
@@ -202,7 +204,8 @@ $(document).ready(function () {
         });
     });
 
-    function buildPayload() {
+    function buildPayload(opts) {
+        const isUpdate = !!(opts && opts.isUpdate);
         const empresa = isEmpresa();
         const nombre = ($('#nombreSN').val() || '').trim();
         const apellido = ($('#apellidoSN').val() || '').trim();
@@ -216,38 +219,33 @@ $(document).ready(function () {
         addIfPresent(customer, 'email', $('#emailSN').val());
         addIfPresent(customer, 'comment', $('#giroSN').val());
 
-        const contacts = [];
-        if (empresa) {
-            const cnNombre = ($('#contactoNombre').val() || '').trim();
-            if (cnNombre) {
-                const c = { name: cnNombre };
-                addIfPresent(c, 'function', $('#contactoCargo').val());
-                addIfPresent(c, 'email', $('#contactoEmail').val());
-                addIfPresent(c, 'phone', $('#contactoTelefono').val());
-                contacts.push(c);
-            }
+        // Dirección embebida en la cabecera del partner (no como hijo).
+        const calle = ($('#dirCalle').val() || '').trim();
+        const numero = ($('#dirNumero').val() || '').trim();
+        const street = [calle, numero].filter(Boolean).join(' ');
+        if (street) customer.street = street;
+        addIfPresent(customer, 'city', $('#dirComuna').val());
+        addIfPresent(customer, 'zip', $('#dirZip').val());
+
+        // Contacto principal: persona natural NUNCA tiene contacto hijo
+        // (el "contacto" es la misma persona). Empresa lo trae si se llenó.
+        const contact = empresa ? buildContact() : null;
+
+        if (isUpdate) {
+            return contact ? { customer, contact } : { customer };
         }
-
-        const addresses = [];
-        const dir = buildAddress('dir', 'other');
-        if (dir) addresses.push(dir);
-
-        return { customer, contacts, addresses };
+        const contacts = contact ? [contact] : [];
+        return { customer, contacts };
     }
 
-    function buildAddress(prefix, type) {
-        const calle = ($(`#${prefix}Calle`).val() || '').trim();
-        const numero = ($(`#${prefix}Numero`).val() || '').trim();
-        const street = [calle, numero].filter(Boolean).join(' ');
-        if (!street) return null;
-
-        const a = { type, street, country_id: 46 };
-        addIfPresent(a, 'name', $(`#${prefix}Nombre`).val());
-        addIfPresent(a, 'city', $(`#${prefix}Comuna`).val());
-        addIfPresent(a, 'zip', $(`#${prefix}Zip`).val());
-        addIfPresent(a, 'phone', $(`#${prefix}Telefono`).val());
-        addIfPresent(a, 'region', $(`#${prefix}Region`).val());
-        return a;
+    function buildContact() {
+        const cnNombre = ($('#contactoNombre').val() || '').trim();
+        if (!cnNombre) return null;
+        const c = { name: cnNombre };
+        addIfPresent(c, 'function', $('#contactoCargo').val());
+        addIfPresent(c, 'email', $('#contactoEmail').val());
+        addIfPresent(c, 'phone', $('#contactoTelefono').val());
+        return c;
     }
 
     function addIfPresent(obj, key, raw) {
@@ -255,7 +253,8 @@ $(document).ready(function () {
         if (v) obj[key] = v;
     }
 
-    function validate(payload) {
+    function validate(payload, opts) {
+        const isUpdate = !!(opts && opts.isUpdate);
         const empresa = isEmpresa();
         const errores = [];
 
@@ -265,14 +264,12 @@ $(document).ready(function () {
         if (!empresa && !($('#apellidoSN').val() || '').trim()) {
             errores.push('Apellido es obligatorio para personas naturales.');
         }
-        if (!payload.customer.vat) {
-            errores.push('RUT es obligatorio.');
-        }
-        if (!payload.customer.email) {
-            errores.push('Email es obligatorio.');
-        }
-        if (!payload.customer.phone) {
-            errores.push('Teléfono es obligatorio.');
+        // En update permitimos write parcial: no exigimos RUT/email/teléfono
+        // si el usuario solo está editando otros campos.
+        if (!isUpdate) {
+            if (!payload.customer.vat) errores.push('RUT es obligatorio.');
+            if (!payload.customer.email) errores.push('Email es obligatorio.');
+            if (!payload.customer.phone) errores.push('Teléfono es obligatorio.');
         }
 
         if (errores.length > 0) {

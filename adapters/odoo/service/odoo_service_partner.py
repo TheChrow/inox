@@ -60,7 +60,8 @@ class PartnerOdooService:
             return None
         customer_fields = [
             "id", "name", "is_company", "vat", "email", "phone",
-            "website", "comment", "country_id", "state_id", "child_ids",
+            "website", "comment", "street", "street2", "city", "zip",
+            "country_id", "state_id", "child_ids",
         ]
         rows = self.client.post(
             f"{self.base_path}/read",
@@ -122,10 +123,17 @@ class PartnerOdooService:
         self,
         customer: dict,
         contacts: Optional[list] = None,
-        addresses: Optional[list] = None,
     ) -> dict:
+        """Crear cliente raíz y, opcionalmente, su contacto principal.
+
+        - La dirección (street/street2/city/zip/state_id/country_id) viaja
+          en `customer`, NO como partner hijo: se guarda en la cabecera del
+          res.partner raíz, no como una "dirección" secundaria.
+        - `contacts` admite 0 o 1 item. Si es persona natural, debe ser 0
+          (validado en serializer). Si es empresa con contacto, se crea como
+          res.partner hijo con type='contact'.
+        """
         contacts = contacts or []
-        addresses = addresses or []
 
         existing_partner = self.find_by_vat(customer.get("vat"))
         if existing_partner:
@@ -139,18 +147,12 @@ class PartnerOdooService:
             existing = False
 
         contact_ids: list = []
-        address_ids: list = []
         try:
             for contact in contacts:
                 values = {**_non_empty(contact), "parent_id": customer_id, "type": "contact"}
                 contact_ids.append(self.create_partner(values))
-
-            for address in addresses:
-                values = {**_non_empty(address), "parent_id": customer_id}
-                values.pop("region", None)  # placeholder hasta que exista geo-service que resuelva a state_id
-                address_ids.append(self.create_partner(values))
         except Exception:
-            cleanup = [*contact_ids, *address_ids]
+            cleanup = [*contact_ids]
             if not existing:
                 cleanup.insert(0, customer_id)
             if cleanup:
@@ -164,7 +166,55 @@ class PartnerOdooService:
             "existing": existing,
             "customer_id": customer_id,
             "contact_ids": contact_ids,
-            "address_ids": address_ids,
+        }
+
+    def update_customer(
+        self,
+        customer_id: int,
+        customer: dict,
+        contact: Optional[dict] = None,
+    ) -> dict:
+        """Actualizar cabecera del partner y upsertar el contacto principal.
+
+        - `customer` viaja completo (incluida dirección) y se aplica con write.
+        - `contact`: si el partner ya tiene hijos type='contact', se actualiza
+          el primero (upsert sobre el "contacto principal"). Si no hay ninguno
+          y el payload trae contacto, se crea. Si el payload no trae contacto,
+          no se toca nada.
+        """
+        if not customer_id:
+            raise ValueError("Falta customer_id para actualizar el cliente.")
+
+        updates = _non_empty(customer)
+        if updates:
+            self.write_partner([customer_id], updates)
+
+        contact_id: Optional[int] = None
+        if contact:
+            existing_children = self.client.post(
+                f"{self.base_path}/search_read",
+                {
+                    "domain": [
+                        ("parent_id", "=", customer_id),
+                        ("type", "=", "contact"),
+                    ],
+                    "fields": ["id"],
+                    "limit": 1,
+                    "order": "id asc",
+                },
+            )
+            contact_vals = _non_empty(contact)
+            if isinstance(existing_children, list) and existing_children:
+                contact_id = existing_children[0]["id"]
+                if contact_vals:
+                    self.write_partner([contact_id], contact_vals)
+            else:
+                values = {**contact_vals, "parent_id": customer_id, "type": "contact"}
+                contact_id = self.create_partner(values)
+
+        return {
+            "customer_id": customer_id,
+            "contact_id": contact_id,
         }
 
 

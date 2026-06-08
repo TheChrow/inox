@@ -13,6 +13,10 @@ class Customer(models.Model):
     website = models.CharField(max_length=255, blank=True, default="")
     comment = models.TextField(blank=True, default="")
 
+    street = models.CharField(max_length=255, blank=True, default="")
+    street2 = models.CharField(max_length=255, blank=True, default="")
+    city = models.CharField(max_length=128, blank=True, default="")
+    zip = models.CharField(max_length=32, blank=True, default="")
     country_id = models.IntegerField(blank=True, null=True)
     state_id = models.IntegerField(blank=True, null=True)
 

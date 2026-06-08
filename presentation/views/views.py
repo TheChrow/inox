@@ -19,7 +19,10 @@ from domain.customer_service import CustomerService
 from infrastructure.models.config_discount_db import DiscountConfig
 from infrastructure.models.products_db import Product
 from infrastructure.models.seller_db import Seller
-from presentation.serializers.partner_serializers import CreatePartnerRequestSerializer
+from presentation.serializers.partner_serializers import (
+    CreatePartnerRequestSerializer,
+    UpdatePartnerRequestSerializer,
+)
 from presentation.serializers.sale_serializers import (
     CreateQuotationRequestSerializer,
     ListQuotationsRequestSerializer,
@@ -176,7 +179,6 @@ class OdooPartnerCreateView(APIView):
             result = service.create_or_update(
                 customer=data["customer"],
                 contacts=data.get("contacts"),
-                addresses=data.get("addresses"),
             )
         except Exception as exc:
             return Response(
@@ -231,18 +233,35 @@ class OdooPartnerReadView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # Solo el primer contacto y la primera dirección si existen.
+        # Solo el primer contacto si existe. La dirección viaja en customer.
         first_contact = (data.get("contacts") or [None])[0]
-        first_address = (data.get("addresses") or [None])[0]
         return Response(
             {
                 "ok": True,
                 "customer": data["customer"],
                 "contact": first_contact,
-                "address": first_address,
             },
             status=status.HTTP_200_OK,
         )
+
+    def put(self, request, customer_id: int):
+        serializer = UpdatePartnerRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        service = CustomerService(PartnerOdooService(get_odoo_client()))
+        try:
+            result = service.update_existing(
+                customer_id=customer_id,
+                customer=data["customer"],
+                contact=data.get("contact"),
+            )
+        except ValueError as exc:
+            return Response({"ok": False, "error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as exc:
+            return Response({"ok": False, "error": str(exc)}, status=status.HTTP_502_BAD_GATEWAY)
+
+        return Response({"ok": True, **result}, status=status.HTTP_200_OK)
 
 
 class OdooQuotationListView(APIView):
