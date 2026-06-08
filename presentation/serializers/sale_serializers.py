@@ -42,3 +42,17 @@ class CreateQuotationRequestSerializer(serializers.Serializer):
         if not value:
             raise serializers.ValidationError("Debe enviar al menos una línea.")
         return value
+
+
+class UpdateQuotationRequestSerializer(serializers.Serializer):
+    partner_id = serializers.IntegerField(min_value=1, required=False)
+    lines = QuotationLineSerializer(many=True)
+    validity_date = serializers.DateField(required=False, allow_null=True)
+    client_order_ref = serializers.CharField(max_length=128, required=False, allow_blank=True)
+    note = serializers.CharField(required=False, allow_blank=True)
+    salesperson_code = serializers.CharField(max_length=32, required=False, allow_blank=True)
+
+    def validate_lines(self, value):
+        if not value:
+            raise serializers.ValidationError("Debe enviar al menos una línea.")
+        return value

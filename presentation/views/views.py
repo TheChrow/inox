@@ -23,6 +23,7 @@ from presentation.serializers.partner_serializers import CreatePartnerRequestSer
 from presentation.serializers.sale_serializers import (
     CreateQuotationRequestSerializer,
     ListQuotationsRequestSerializer,
+    UpdateQuotationRequestSerializer,
 )
 
 
@@ -315,6 +316,31 @@ class OdooQuotationReadView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
         return Response({"ok": True, **data}, status=status.HTTP_200_OK)
+
+    def put(self, request, odoo_name: str):
+        serializer = UpdateQuotationRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        validity_date = data.get("validity_date")
+
+        service = SaleOdooService(get_odoo_client())
+        try:
+            result = service.update_quotation(
+                name=odoo_name,
+                lines=data["lines"],
+                partner_id=data.get("partner_id"),
+                validity_date=validity_date.isoformat() if validity_date else None,
+                client_order_ref=data.get("client_order_ref"),
+                note=data.get("note"),
+                salesperson_code=(data.get("salesperson_code") or "").strip() or None,
+            )
+        except ValueError as exc:
+            return Response({"ok": False, "error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as exc:
+            return Response({"ok": False, "error": str(exc)}, status=status.HTTP_502_BAD_GATEWAY)
+
+        return Response({"ok": True, **result}, status=status.HTTP_200_OK)
 
 
 class OdooQuotationCreateView(APIView):

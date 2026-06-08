@@ -213,6 +213,14 @@ class SaleOdooService:
             {"ids": ids},
         )
 
+    def unlink_line(self, ids: list) -> bool:
+        if not ids:
+            return True
+        return self.client.post(
+            f"{self.line_path}/unlink",
+            {"ids": ids},
+        )
+
     def read_quotation_by_name(self, name: str) -> Optional[dict]:
         """Lee una cotización Odoo a partir de su `name` (ej. 'S00004').
 
@@ -369,6 +377,94 @@ class SaleOdooService:
                 name = read_result[0].get("name")
         except Exception:
             pass
+
+        return {"order_id": order_id, "name": name}
+
+    def update_quotation(
+        self,
+        name: str,
+        lines: list,
+        *,
+        partner_id: Optional[int] = None,
+        validity_date: Optional[str] = None,
+        client_order_ref: Optional[str] = None,
+        note: Optional[str] = None,
+        salesperson_code: Optional[str] = None,
+    ) -> dict:
+        """Actualiza una cotización existente (búsqueda por `name`).
+
+        Sólo permitido en estado 'draft' o 'sent'. Estrategia para las líneas:
+        reemplazo total (clear+add) — más simple y predecible que diffear, y
+        evita estados inconsistentes si el usuario añadió/quitó/editó filas.
+
+        Flujo:
+          1. search_read por name → id, state, order_line.
+          2. Validar state ∈ (draft, sent).
+          3. Resolver SKU → product_id; faltantes → ValueError.
+          4. Intento 1: write con `order_line: [(5,0,0), (0,0,vals)...]`.
+          5. Fallback: write cabecera + unlink líneas viejas + create_line por cada nueva.
+        """
+        name = (name or "").strip()
+        if not name:
+            raise ValueError("Falta el nombre de la cotización a actualizar.")
+
+        orders = self.client.post(
+            f"{self.base_path}/search_read",
+            {
+                "domain": [("name", "=", name)],
+                "fields": ["id", "state", "order_line"],
+                "limit": 1,
+            },
+        )
+        if not isinstance(orders, list) or not orders:
+            raise ValueError(f"Cotización no encontrada en Odoo: {name}")
+        order = orders[0]
+        order_id = order["id"]
+        if order.get("state") not in ("draft", "sent"):
+            raise ValueError(
+                f"No se puede modificar la cotización {name} en estado '{order.get('state')}'."
+            )
+
+        skus = [ln["default_code"] for ln in lines]
+        sku_to_id = self.resolve_products_by_sku(skus)
+        missing = sorted({s for s in skus if s not in sku_to_id})
+        if missing:
+            raise ValueError(f"SKUs no encontrados en Odoo: {missing}")
+
+        line_vals = [
+            _build_line_vals(ln, sku_to_id[ln["default_code"]])
+            for ln in lines
+        ]
+
+        header_vals: dict = {}
+        if partner_id:
+            header_vals["partner_id"] = partner_id
+        if validity_date:
+            header_vals["validity_date"] = validity_date
+        if client_order_ref is not None:
+            header_vals["client_order_ref"] = client_order_ref
+        if note is not None:
+            header_vals["note"] = note
+        if salesperson_code is not None:
+            header_vals["x_studio_vendedor"] = salesperson_code
+
+        embedded_vals = {
+            **header_vals,
+            "order_line": [[5, 0, 0]] + [[0, 0, lv] for lv in line_vals],
+        }
+        try:
+            self.write([order_id], embedded_vals)
+        except Exception:
+            if header_vals:
+                self.write([order_id], header_vals)
+            old_line_ids = order.get("order_line") or []
+            if old_line_ids:
+                try:
+                    self.unlink_line(old_line_ids)
+                except Exception:
+                    pass
+            for lv in line_vals:
+                self.create_line({**lv, "order_id": order_id})
 
         return {"order_id": order_id, "name": name}
 

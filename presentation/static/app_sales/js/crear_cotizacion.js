@@ -11,6 +11,10 @@ $(document).ready(function () {
     bindSave('saveButton2');
 
     function submitQuotation() {
+        // #numero_cotizacion vacío → crear; con texto (ej. S00003) → actualizar.
+        const existingName = ($('#numero_cotizacion').text() || '').trim();
+        const isUpdate = existingName.length > 0;
+
         let payload;
         try {
             payload = buildPayload();
@@ -21,15 +25,20 @@ $(document).ready(function () {
 
         showLoadingOverlay();
 
+        const ajaxConfig = isUpdate
+            ? { url: `/sales/odoo/quotations/${encodeURIComponent(existingName)}/`, method: 'PUT' }
+            : { url: '/sales/odoo/quotations/', method: 'POST' };
+
         $.ajax({
-            url: '/sales/odoo/quotations/',
-            method: 'POST',
+            url: ajaxConfig.url,
+            method: ajaxConfig.method,
             contentType: 'application/json',
             headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') },
             data: JSON.stringify(payload),
             success: function (data) {
+                const title = isUpdate ? 'Cotización actualizada' : 'Cotización creada';
                 Swal.fire(
-                    'Cotización creada',
+                    title,
                     `Odoo: <b>${data.name || ''}</b> (id ${data.order_id})`,
                     'success'
                 ).then(() => {
@@ -48,7 +57,8 @@ $(document).ready(function () {
                 } else {
                     msg = xhr.statusText || 'Error desconocido';
                 }
-                Swal.fire('Error al crear cotización', msg, 'error');
+                const title = isUpdate ? 'Error al actualizar cotización' : 'Error al crear cotización';
+                Swal.fire(title, msg, 'error');
             },
             complete: function () {
                 hideLoadingOverlay();
