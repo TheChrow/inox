@@ -1,0 +1,49 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Inicio' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+    &rsaquo; <a href="{% url 'admin:infrastructure_product_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+    &rsaquo; {% trans 'Cargar CSV' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <p>
+        {% blocktrans %}
+        Sube un archivo CSV para crear o actualizar productos en lote.
+        Las filas se identifican por la columna <code>code</code>: si el código existe, el producto se actualiza; si no, se crea.
+        {% endblocktrans %}
+    </p>
+
+    <p>
+        <a href="{{ template_url }}" class="button">{% trans 'Descargar plantilla CSV' %}</a>
+    </p>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        <fieldset class="module aligned">
+            {% for field in form %}
+                <div class="form-row">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}<div class="help">{{ field.help_text }}</div>{% endif %}
+                    {% for error in field.errors %}<p class="errornote">{{ error }}</p>{% endfor %}
+                </div>
+            {% endfor %}
+        </fieldset>
+
+        <div class="submit-row">
+            <input type="submit" value="{% trans 'Cargar' %}" class="default">
+            <a href="{% url 'admin:infrastructure_product_changelist' %}" class="closelink">{% trans 'Cancelar' %}</a>
+        </div>
+    </form>
+
+    <h2>{% trans 'Columnas esperadas' %}</h2>
+    <p><strong>{% trans 'Obligatorias' %}:</strong> <code>code, name, list_price, sale_price, product_url, max_store_discount, max_project_discount</code></p>
+    <p><strong>{% trans 'Opcionales' %}:</strong> <code>image_url, total_stock, brand, cost, is_discontinued, is_inactive, tree_type, certification</code></p>
+</div>
+{% endblock %}
