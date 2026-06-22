@@ -12,6 +12,10 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
     volumes:
       - mysql_data:/var/lib/mysql
+    # Solo localhost del host: accesible por túnel SSH desde Workbench,
+    # invisible desde internet. Nunca usar "3306:3306" sin el 127.0.0.1.
+    ports:
+      - "127.0.0.1:3306:3306"
     networks:
       - inox_net
     healthcheck:
