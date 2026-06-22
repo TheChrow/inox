@@ -30,21 +30,13 @@ services:
     env_file:
       - .env
     environment:
-      DJANGO_SETTINGS_MODULE: config.settings.prod
+      DJANGO_ENV: prod
       DB_HOST: db
       DB_PORT: "3306"
-    command: >
-      sh -c "
-      python manage.py migrate --no-input &&
-      python manage.py collectstatic --no-input &&
-      gunicorn config.wsgi:application
-        --bind 0.0.0.0:8000
-        --workers 4
-        --threads 2
-        --timeout 120
-        --access-logfile -
-        --error-logfile -
-      "
+    command:
+      - sh
+      - -c
+      - python manage.py migrate --no-input && python manage.py collectstatic --no-input && exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2 --timeout 120 --access-logfile - --error-logfile -
     volumes:
       - media_data:/app/media
       - static_data:/app/staticfiles
