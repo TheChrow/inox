@@ -1,0 +1,12 @@
+# inox — dependencias runtime
+# Mantener estas versiones alineadas con el entorno local (probado en Windows
+# con GTK3 runtime para WeasyPrint y MySQL 9 para Odoo metadata local).
+
+Django==6.0.4
+djangorestframework==3.17.1
+mysqlclient==2.2.8
+requests==2.34.2
+python-dotenv==1.2.2
+whitenoise==6.12.0
+weasyprint==69.0
+gunicorn==23.0.0

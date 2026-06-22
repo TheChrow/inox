@@ -1,0 +1,66 @@
+# inox — stack de producción.
+# Servicios: MySQL + Django (gunicorn). Whitenoise sirve los estáticos, así
+# que no hace falta nginx en el frente. Variables sensibles vienen del .env.
+
+services:
+  db:
+    image: mysql:9.0.1
+    container_name: inox-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - inox_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: inox:prod
+    container_name: inox-web
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.prod
+      DB_HOST: db
+      DB_PORT: "3306"
+    command: >
+      sh -c "
+      python manage.py migrate --no-input &&
+      python manage.py collectstatic --no-input &&
+      gunicorn config.wsgi:application
+        --bind 0.0.0.0:8000
+        --workers 4
+        --threads 2
+        --timeout 120
+        --access-logfile -
+        --error-logfile -
+      "
+    volumes:
+      - media_data:/app/media
+      - static_data:/app/staticfiles
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - inox_net
+
+volumes:
+  mysql_data:
+  media_data:
+  static_data:
+
+networks:
+  inox_net:
+    driver: bridge

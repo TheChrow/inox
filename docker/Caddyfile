@@ -1,0 +1,14 @@
+# inox — reverse proxy con TLS automático (Let's Encrypt).
+# Copia este archivo a /etc/caddy/Caddyfile en el host y recarga: sudo systemctl reload caddy
+#
+# Marcha blanca: nip.io mapea el hostname a la IP de la EC2 (13.60.184.208)
+# sin necesidad de DNS propio. Let's Encrypt emite cert real porque el
+# challenge HTTP-01 resuelve correcto contra esta máquina.
+#
+# Cuando esté el subdominio definitivo, agregar el bloque correspondiente
+# manteniendo este durante la transición.
+
+inox-13-60-184-208.nip.io {
+    reverse_proxy 127.0.0.1:8000
+    encode zstd gzip
+}

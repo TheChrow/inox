@@ -1,0 +1,63 @@
+# inox — stack de desarrollo.
+# Diferencias con prod:
+#   - DJANGO_SETTINGS_MODULE=config.settings.dev
+#   - runserver con autoreload (en vez de gunicorn)
+#   - bind mount del código fuente: editás y el server recarga
+#   - puerto MySQL expuesto al host para que podamos conectarnos con un cliente
+
+services:
+  db:
+    image: mysql:9.0.1
+    container_name: inox-db-dev
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - mysql_data_dev:/var/lib/mysql
+    ports:
+      - "4351:3306"
+    networks:
+      - inox_net_dev
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: inox:dev
+    container_name: inox-web-dev
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.dev
+      DB_HOST: db
+      DB_PORT: "3306"
+    command: >
+      sh -c "
+      python manage.py migrate --no-input &&
+      python manage.py runserver 0.0.0.0:8000
+      "
+    volumes:
+      - .:/app
+      - media_data_dev:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - inox_net_dev
+
+volumes:
+  mysql_data_dev:
+  media_data_dev:
+
+networks:
+  inox_net_dev:
+    driver: bridge
