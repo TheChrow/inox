@@ -396,4 +396,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* ── Primera carga ─────────────────────────────────────────────── */
     fetchData(1);
+
+    /* ── Restauración desde bfcache al volver atrás ────────────────── */
+    window.addEventListener("pageshow", (event) => {
+        if (event.persisted) {
+            hideLoading();
+            fetchData(currentPage);
+        }
+    });
 });
