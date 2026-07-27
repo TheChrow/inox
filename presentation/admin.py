@@ -9,17 +9,144 @@ from domain.product_csv_import_service import (
     csv_template_bytes,
     import_products_from_csv,
 )
+from infrastructure.models.bp_type_db import BPType
 from infrastructure.models.branch_db import Branch
+from infrastructure.models.config_discount_db import DiscountConfig
+from infrastructure.models.customer_address_db import CustomerAddress
+from infrastructure.models.customer_contact_db import CustomerContact
+from infrastructure.models.customer_db import Customer
+from infrastructure.models.customer_type_db import CustomerType
+from infrastructure.models.delivery_type_db import DeliveryType
+from infrastructure.models.documents_db import Document
+from infrastructure.models.group_bp_db import GroupBP
 from infrastructure.models.menu_module_db import MenuModule
 from infrastructure.models.nav_item_db import NavItem
+from infrastructure.models.payment_terms_db import PaymentTerms
+from infrastructure.models.price_list_db import PriceList
 from infrastructure.models.products_db import Product
+from infrastructure.models.sale_type_db import SaleType
 from infrastructure.models.seller_db import Seller
 from infrastructure.models.seller_type_db import SellerType
+from infrastructure.models.tax_doc_type_db import TaxDocumentType
 
 # Register your models here.
 admin.site.register(SellerType)
 admin.site.register(Seller)
 admin.site.register(Branch)
+
+
+@admin.register(BPType)
+class BPTypeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name', 'description')
+    search_fields = ('code', 'name', 'description')
+
+
+@admin.register(CustomerType)
+class CustomerTypeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name')
+    search_fields = ('code', 'name')
+
+
+@admin.register(GroupBP)
+class GroupBPAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name')
+    search_fields = ('code', 'name')
+
+
+@admin.register(SaleType)
+class SaleTypeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name')
+    search_fields = ('code', 'name')
+
+
+@admin.register(TaxDocumentType)
+class TaxDocumentTypeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name')
+    search_fields = ('code', 'name')
+
+
+@admin.register(DeliveryType)
+class DeliveryTypeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name', 'description')
+    search_fields = ('code', 'name', 'description')
+
+
+@admin.register(PaymentTerms)
+class PaymentTermsAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name')
+    search_fields = ('code', 'name')
+
+
+@admin.register(PriceList)
+class PriceListAdmin(admin.ModelAdmin):
+    list_display = (
+        'code_list', 'name', 'description', 'active',
+        'valid_from', 'valid_to', 'list_only_for_members', 'last_modification',
+    )
+    list_filter = ('active', 'list_only_for_members')
+    search_fields = ('code_list', 'name', 'description')
+
+
+@admin.register(DiscountConfig)
+class DiscountConfigAdmin(admin.ModelAdmin):
+    list_display = ('code', 'description', 'sale_type', 'brand_type', 'max_discount_limit')
+    list_filter = ('sale_type', 'brand_type')
+    search_fields = ('code', 'description')
+
+
+class CustomerContactInline(admin.TabularInline):
+    model = CustomerContact
+    extra = 0
+    fields = ('odoo_id', 'name', 'function', 'email', 'phone')
+    show_change_link = True
+
+
+class CustomerAddressInline(admin.TabularInline):
+    model = CustomerAddress
+    extra = 0
+    fields = ('odoo_id', 'type', 'name', 'street', 'city', 'zip', 'phone')
+    show_change_link = True
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('odoo_id', 'name', 'vat', 'email', 'phone', 'city', 'is_company', 'updated_at')
+    list_filter = ('is_company',)
+    search_fields = ('name', 'vat', 'email', 'phone', 'odoo_id')
+    readonly_fields = ('created_at', 'updated_at')
+    inlines = [CustomerContactInline, CustomerAddressInline]
+
+
+@admin.register(CustomerContact)
+class CustomerContactAdmin(admin.ModelAdmin):
+    list_display = ('odoo_id', 'name', 'customer', 'function', 'email', 'phone', 'updated_at')
+    search_fields = ('name', 'email', 'phone', 'customer__name', 'odoo_id')
+    autocomplete_fields = ('customer',)
+    readonly_fields = ('created_at', 'updated_at')
+
+
+@admin.register(CustomerAddress)
+class CustomerAddressAdmin(admin.ModelAdmin):
+    list_display = ('odoo_id', 'customer', 'type', 'street', 'city', 'zip', 'phone', 'updated_at')
+    list_filter = ('type',)
+    search_fields = ('street', 'city', 'zip', 'customer__name', 'odoo_id')
+    autocomplete_fields = ('customer',)
+    readonly_fields = ('created_at', 'updated_at')
+
+
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = (
+        'doc_entry', 'doc_num', 'folio', 'date_document', 'delivery_date',
+        'customer', 'seller', 'document_status', 'total_document',
+    )
+    list_filter = ('document_status', 'sale_type', 'tax_document_type', 'delivery_type')
+    search_fields = (
+        'doc_entry', 'doc_num', 'folio', 'reference', 'comment',
+        'customer__name', 'seller__auth_user__username',
+    )
+    date_hierarchy = 'date_document'
+    autocomplete_fields = ('customer',)
 
 
 class ProductCsvUploadForm(forms.Form):
