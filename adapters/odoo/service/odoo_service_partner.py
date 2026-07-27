@@ -1,4 +1,7 @@
+import html
 from typing import Optional
+
+from django.utils.html import strip_tags
 
 from adapters.odoo.client.odoo_client import OdooAPIClient
 
@@ -70,6 +73,7 @@ class PartnerOdooService:
         if not isinstance(rows, list) or not rows:
             return None
         customer = rows[0]
+        customer["comment"] = _html_to_text(customer.get("comment"))
 
         child_ids = customer.get("child_ids") or []
         children: list = []
@@ -220,3 +224,10 @@ class PartnerOdooService:
 
 def _non_empty(d: dict) -> dict:
     return {k: v for k, v in d.items() if v not in (None, "", [])}
+
+
+def _html_to_text(value) -> str:
+    """Aplanar HTML de Odoo (campos Html como res.partner.comment) a texto plano."""
+    if not value:
+        return ""
+    return html.unescape(strip_tags(value)).strip()
