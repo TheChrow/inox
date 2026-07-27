@@ -155,11 +155,13 @@ $(document).ready(function () {
         }
 
         // Dirección: viene en la cabecera del partner (street/city/zip/state_id).
-        // dirNumero queda vacío: street ya contiene calle+número concatenados.
         // Etiqueta se persiste en `ref` (Referencia interna) del res.partner.
+        // Al leer, intentamos separar "matucana 700" en calle + número para que
+        // los inputs queden desacoplados; al guardar se vuelven a concatenar.
         $('#dirNombre').val(customer.ref || '');
-        $('#dirCalle').val(customer.street || '');
-        $('#dirNumero').val('');
+        const partesCalle = splitStreetNumero(customer.street || '');
+        $('#dirCalle').val(partesCalle.calle);
+        $('#dirNumero').val(partesCalle.numero);
         $('#dirComuna').val(customer.city || '');
         $('#dirZip').val(customer.zip || '');
         const region = Array.isArray(customer.state_id) ? customer.state_id[1] : '';
@@ -281,6 +283,19 @@ $(document).ready(function () {
     function addIfPresent(obj, key, raw) {
         const v = (raw || '').trim();
         if (v) obj[key] = v;
+    }
+
+    // Odoo guarda toda la dirección en un solo campo `street`. El formulario
+    // separa calle y número por UX. Al leer, intentamos separar el numero
+    // final (ej: "matucana 700" -> {calle:"matucana", numero:"700"}). Si el
+    // último token no es un número puro, se deja todo en calle sin adivinar.
+    function splitStreetNumero(street) {
+        const s = (street || '').trim();
+        if (!s) return { calle: '', numero: '' };
+        // Captura texto + espacio + número final (opcional letra tipo "700B").
+        const m = s.match(/^(.+?)\s+(\d+[A-Za-z]?)$/);
+        if (!m) return { calle: s, numero: '' };
+        return { calle: m[1].trim(), numero: m[2] };
     }
 
     function validate(payload, opts) {
