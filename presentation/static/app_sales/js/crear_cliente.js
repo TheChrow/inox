@@ -15,6 +15,25 @@ $(document).ready(function () {
     $('input[name="grupoSN"]').on('change', toggleByTipo);
     toggleByTipo();
 
+    // Poblar sugerencias de Región desde Odoo (res.country.state, Chile).
+    // Best-effort: si Odoo no responde, el campo sigue siendo texto libre y
+    // el backend resolverá el nombre por fuzzy match al guardar.
+    (function cargarRegiones() {
+        const $datalist = $('#dirRegionOpciones');
+        if (!$datalist.length) return;
+        $.ajax({
+            url: '/sales/odoo/states/',
+            method: 'GET',
+            headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') },
+        }).done(function (resp) {
+            const records = (resp && resp.records) || [];
+            $datalist.empty();
+            records.forEach(function (r) {
+                $datalist.append($('<option>').attr('value', r.name));
+            });
+        });
+    })();
+
     // ─── Autocompletar en #inputCliente ───────────────────────────────────────
     const $inputCliente = $('#inputCliente');
     const $sugerencias = $('#resultadosClientes');
@@ -123,7 +142,7 @@ $(document).ready(function () {
         $('#rutSN').val(customer.vat || '');
         $('#telefonoSN').val(customer.phone || '+56');
         $('#emailSN').val(customer.email || '');
-        $('#giroSN').val(customer.comment || '');
+        $('#giroSN').val(customer.activity_description || customer.comment || '');
 
         // Contacto: solo si es empresa y existe
         if (empresa && contact) {
@@ -137,12 +156,12 @@ $(document).ready(function () {
 
         // Dirección: viene en la cabecera del partner (street/city/zip/state_id).
         // dirNumero queda vacío: street ya contiene calle+número concatenados.
-        $('#dirNombre').val('');
+        // Etiqueta se persiste en `ref` (Referencia interna) del res.partner.
+        $('#dirNombre').val(customer.ref || '');
         $('#dirCalle').val(customer.street || '');
         $('#dirNumero').val('');
         $('#dirComuna').val(customer.city || '');
         $('#dirZip').val(customer.zip || '');
-        $('#dirTelefono').val('');
         const region = Array.isArray(customer.state_id) ? customer.state_id[1] : '';
         $('#dirRegion').val(region || '');
 
@@ -223,15 +242,20 @@ $(document).ready(function () {
         addIfPresent(customer, 'vat', $('#rutSN').val());
         addIfPresent(customer, 'phone', $('#telefonoSN').val());
         addIfPresent(customer, 'email', $('#emailSN').val());
-        addIfPresent(customer, 'comment', $('#giroSN').val());
+        // Giro se guarda en "Descripción de la actividad" (l10n_cl_activity_description).
+        addIfPresent(customer, 'activity_description', $('#giroSN').val());
 
         // Dirección embebida en la cabecera del partner (no como hijo).
+        // Etiqueta -> ref (Referencia interna); Región llega como texto libre
+        // y el backend la resuelve contra res.country.state (Chile).
+        addIfPresent(customer, 'ref', $('#dirNombre').val());
         const calle = ($('#dirCalle').val() || '').trim();
         const numero = ($('#dirNumero').val() || '').trim();
         const street = [calle, numero].filter(Boolean).join(' ');
         if (street) customer.street = street;
         addIfPresent(customer, 'city', $('#dirComuna').val());
         addIfPresent(customer, 'zip', $('#dirZip').val());
+        addIfPresent(customer, 'region', $('#dirRegion').val());
 
         // Contacto principal: persona natural NUNCA tiene contacto hijo
         // (el "contacto" es la misma persona). Empresa lo trae si se llenó.

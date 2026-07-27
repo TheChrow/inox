@@ -216,6 +216,30 @@ class OdooPartnerSearchView(APIView):
         return Response({"ok": True, "records": records}, status=status.HTTP_200_OK)
 
 
+class OdooStateListView(APIView):
+    """Lista las regiones/estados de un país (Chile por defecto).
+
+    Se usa para poblar el datalist del formulario de cliente. La validación
+    fuerte (matching fuzzy) vive en el servicio Odoo al momento de escribir.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            country_id = int(request.query_params.get("country_id") or 46)
+        except (TypeError, ValueError):
+            country_id = 46
+        service = PartnerOdooService(get_odoo_client())
+        try:
+            records = service.list_states(country_id=country_id)
+        except Exception as exc:
+            return Response(
+                {"ok": False, "error": str(exc)},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+        return Response({"ok": True, "records": records}, status=status.HTTP_200_OK)
+
+
 class OdooPartnerReadView(APIView):
     permission_classes = [IsAuthenticated]
 

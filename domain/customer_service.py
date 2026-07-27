@@ -100,6 +100,8 @@ class CustomerService:
             "phone": data.get("phone") or "",
             "website": data.get("website") or "",
             "comment": data.get("comment") or "",
+            "ref": data.get("ref") or "",
+            "activity_description": data.get("activity_description") or "",
             "street": data.get("street") or "",
             "street2": data.get("street2") or "",
             "city": data.get("city") or "",

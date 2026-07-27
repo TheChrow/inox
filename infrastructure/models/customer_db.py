@@ -12,6 +12,8 @@ class Customer(models.Model):
     phone = models.CharField(max_length=64, blank=True, default="")
     website = models.CharField(max_length=255, blank=True, default="")
     comment = models.TextField(blank=True, default="")
+    ref = models.CharField(max_length=128, blank=True, default="")
+    activity_description = models.CharField(max_length=255, blank=True, default="")
 
     street = models.CharField(max_length=255, blank=True, default="")
     street2 = models.CharField(max_length=255, blank=True, default="")

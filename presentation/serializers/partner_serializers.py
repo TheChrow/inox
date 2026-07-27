@@ -16,12 +16,20 @@ class CustomerSerializer(serializers.Serializer):
     phone = serializers.CharField(max_length=64, required=False, allow_blank=True)
     website = serializers.URLField(required=False, allow_blank=True)
     comment = serializers.CharField(required=False, allow_blank=True)
+    activity_description = serializers.CharField(
+        max_length=255, required=False, allow_blank=True
+    )
+    ref = serializers.CharField(max_length=128, required=False, allow_blank=True)
     street = serializers.CharField(max_length=255, required=False, allow_blank=True)
     street2 = serializers.CharField(max_length=255, required=False, allow_blank=True)
     city = serializers.CharField(max_length=128, required=False, allow_blank=True)
     zip = serializers.CharField(max_length=32, required=False, allow_blank=True)
     country_id = serializers.IntegerField(required=False)
     state_id = serializers.IntegerField(required=False)
+    # `region` es el nombre de la región tal como lo escribió el usuario.
+    # El backend lo resuelve contra res.country.state (fuzzy match) y lo
+    # convierte en state_id antes de escribir en Odoo.
+    region = serializers.CharField(max_length=128, required=False, allow_blank=True)
 
 
 class CustomerUpdateSerializer(CustomerSerializer):
