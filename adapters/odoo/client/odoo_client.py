@@ -5,6 +5,10 @@ from typing import Any, Dict, Optional
 logger = logging.getLogger(__name__)
 
 
+class OdooUnavailableError(requests.exceptions.RequestException):
+    """Odoo respondió algo que no es la API (redirección o HTML), p. ej. base bloqueada."""
+
+
 class OdooAPIClient:
     def __init__(self, config: dict):
         self.baseurl = config.get("base_url", "").rstrip("/")
@@ -48,11 +52,26 @@ class OdooAPIClient:
                 json=body,
                 headers=self._headers(),
                 timeout=self.timeout,
+                allow_redirects=False,
             )
+
+            if response.is_redirect:
+                location = response.headers.get("Location", "")
+                if "/_odoo/upgrade" in location:
+                    detail = "la base de datos está bloqueada (suscripción vencida o actualización en curso)"
+                else:
+                    detail = f"redirigió a {location or 'una página desconocida'}"
+                raise OdooUnavailableError(f"Odoo no está disponible: {detail}.")
 
             response.raise_for_status()
 
-            data = response.json()
+            try:
+                data = response.json()
+            except ValueError as exc:
+                content_type = response.headers.get("Content-Type", "desconocido")
+                raise OdooUnavailableError(
+                    f"Odoo no está disponible: respondió {content_type} en vez de JSON (HTTP {response.status_code})."
+                ) from exc
 
             # manejar JSON-RPC
             if path.startswith("/web/"):
@@ -63,6 +82,10 @@ class OdooAPIClient:
                 return data.get("result")
 
             return data
+
+        except OdooUnavailableError:
+            logger.error(f"Odoo no disponible: {url} - {payload}")
+            raise
 
         except requests.exceptions.HTTPError as exc:
             body_text = ""
